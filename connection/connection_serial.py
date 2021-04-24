@@ -1,4 +1,5 @@
 import serial
+import os
 from . import Connection
 
 class ConnectionSerial(Connection):
