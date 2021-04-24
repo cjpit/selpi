@@ -57,7 +57,7 @@ MAP = {
     },
     "CombinedKacoAcPowerHiRes": {
         DESCRIPTION: 'AC Solar Power',
-        ADDRESS: 0xa3a8,
+        ADDRESS: 41896,
         TYPE: "uint",
         UNITS: "W",
         CONVERSION: "ac_w",
@@ -78,14 +78,14 @@ MAP = {
     },
     "BatteryVolts": {
         DESCRIPTION: 'Battery Volts',
-        ADDRESS: 0xa05c,
+        ADDRESS: 41052,
         TYPE: "ushort",
         UNITS: "V",
         CONVERSION: "dc_v",
     },
     "DCBatteryPower": {
         DESCRIPTION: 'Battery Power',
-        ADDRESS: 0xa02f,
+        ADDRESS: 41007,
         TYPE: "int",
         UNITS: "W",
         CONVERSION: "dc_w",
@@ -118,18 +118,95 @@ MAP = {
         UNITS: "",
         CONVERSION: "shunt_name",
     },
-    "BatteryTemperature": {
-        DESCRIPTION: "Battery Temperature",
-        ADDRESS: 0xa03c,
+     "Heatsink1Temp": {
+        DESCRIPTION: "Heatsink 1 Temperature",
+        ADDRESS: 41015,
         TYPE: "ushort",
         UNITS: "°C",
         CONVERSION: "temperature",
     },
-    "BattOutkWhPreviousAcc": {
+     "Heatsink2Temp": {
+        DESCRIPTION: "Heatsink 2 Temperature",
+        ADDRESS: 41016,
+        TYPE: "ushort",
+        UNITS: "°C",
+        CONVERSION: "temperature",
+    },
+     "ControlBoardTemp": {
+        DESCRIPTION: "Control Board Temp",
+        ADDRESS: 41019,
+        TYPE: "ushort",
+        UNITS: "°C",
+        CONVERSION: "temperature",
+    },
+    "BatteryTemperature": {
+        DESCRIPTION: "Battery Temperature",
+        ADDRESS: 41020,
+        TYPE: "ushort",
+        UNITS: "°C",
+        CONVERSION: "temperature",
+    },
+     "TransformerTemp": {
+        DESCRIPTION: "Transformer Temperature",
+        ADDRESS: 41021,
+        TYPE: "ushort",
+        UNITS: "°C",
+        CONVERSION: "temperature",
+    },
+     "InletTemp": {
+        DESCRIPTION: "Inlet Temperature",
+        ADDRESS: 41022,
+        TYPE: "ushort",
+        UNITS: "°C",
+        CONVERSION: "temperature",
+    },
+     "FanSpeed": {
+        DESCRIPTION: "Fan Speed",
+        ADDRESS: 41026,
+        TYPE: "ushort",
+        UNITS: "RPM",
+    },
+    "PercentageSolarOutput": {
+        DESCRIPTION: "Solar Output Percentage",
+        ADDRESS: 41121,
+        TYPE: "ushort",
+        UNITS: "%",
+        CONVERSION: "percent",
+    },
+
+    "BattInToday": {
+        DESCRIPTION: "Battery In Energy Today",
+        ADDRESS: 41176,
+        TYPE: "uint",
+        UNITS: "wh",
+        CONVERSION: "dc_wh",
+    },
+    "BattOutToday": {
         DESCRIPTION: "Battery Out Energy Today",
-        ADDRESS: 0xa18c,
+        ADDRESS: 41178,
         TYPE: "uint",
         UNITS: "Wh",
+        CONVERSION: "dc_wh",
+    },
+    "BattNetToday": {
+        DESCRIPTION: "Battery Net Today",
+        ADDRESS: 41178,
+        TYPE: "uint",
+        UNITS: "wh",
+        CONVERSION: "dc_wh",
+    },
+    "BattInYesterday": {
+        DESCRIPTION: "Battery In Energy Yesterday",
+        ADDRESS: 41329,
+        TYPE: "uint",
+        UNITS: "wh",
+        CONVERSION: "dc_wh",
+    },
+    "BattOutYesterday": {
+        DESCRIPTION: "Battery Out Energy Yesterday",
+        ADDRESS: 41356,
+        TYPE: "uint",
+        UNITS: "wh",
         CONVERSION: "dc_wh",
     },
     "BattSocPercent": {
@@ -139,6 +216,40 @@ MAP = {
         UNITS: "%",
         CONVERSION: "percent",
     },
+    "LoadAccumulatedToday": {
+        DESCRIPTION: "Load Accumulated Today",
+        ADDRESS: 41196,
+        TYPE: "uint",
+        UNITS: "Wh",
+        CONVERSION: "ac_wh",
+    },
+    "BattSocPercent": {
+        DESCRIPTION: "Battery State of Charge",
+        ADDRESS: 41089,
+        TYPE: "ushort",
+        UNITS: "%",
+        CONVERSION: "percent",
+    },
+    "absorb": {
+        DESCRIPTION: "Absorb",
+        ADDRESS: 41217,
+        TYPE: "ushort",
+        UNITS: "Bool",
+    },
+    "bulk": {
+        DESCRIPTION: "Bulk",
+        ADDRESS: 41218,
+        TYPE: "ushort",
+        UNITS: "Bool",
+    },
+    "float": {
+        DESCRIPTION: "Float",
+        ADDRESS: 41220,
+        TYPE: "ushort",
+        UNITS: "Bool",
+    },
+
+    
     "LoginHash": {
         ADDRESS: 0x1f0000,
         TYPE: ""

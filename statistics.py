@@ -14,17 +14,33 @@ class Statistics():
         ]
         self.__variables = [
             variable.create('CombinedKacoAcPowerHiRes'),
+            variable.create('LoadAcPower'),
+            variable.create('ACLoadkWhTotalAcc'),
+            variable.create('BatteryVolts'),
+            variable.create('DCBatteryPower'),
             variable.create('Shunt1Name'),
             variable.create('Shunt1Power'),
             variable.create('Shunt2Name'),
             variable.create('Shunt2Power'),
-            variable.create('BatteryVolts'),
+            variable.create('Heatsink1Temp'),
+            variable.create('Heatsink2Temp'),
+            variable.create('ControlBoardTemp'),
             variable.create('BatteryTemperature'),
-            variable.create('LoadAcPower'),
-            variable.create('DCBatteryPower'),
-            variable.create('ACLoadkWhTotalAcc'),
-            variable.create('BattOutkWhPreviousAcc'),
+            variable.create('TransformerTemp'),
+            variable.create('InletTemp'),
+            variable.create('FanSpeed'),
+            variable.create('BattOutToday'),
+            variable.create('BattInToday'),
+            variable.create('BattNetToday'),
+            variable.create('BattInYesterday'),
+            variable.create('BattOutYesterday'),
+            variable.create('absorb'),
+            variable.create('bulk'),
+            variable.create('float'),
             variable.create('BattSocPercent'),
+            variable.create('LoadAccumulatedToday'),
+            variable.create('PercentageSolarOutput')
+
         ]
         self.__scales = None
 
