@@ -4,3 +4,10 @@ services:
   python:
     build: .
     init: true
+    ports:
+      - '8000:8000'
+    restart: always
+    devices:
+      - "/dev/ttyUSB0:/dev/ttyUSB0"
+
+   
