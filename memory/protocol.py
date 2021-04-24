@@ -12,6 +12,7 @@ class Protocol:
         self.__connection = connection or create_connection()
         self.__password = password or os.getenvb(b'SELPI_SPPRO_PASSWORD')
         self.__read_buffer = bytearray()
+        self.login()
 
     """
     Request memory from the SP Pro
