@@ -5,8 +5,8 @@ from . import Connection
 class ConnectionSerial(Connection):
     def _connect(self):
         self.__port = serial.Serial(
-            os.getenvb(b'SELPI_CONNECTION_SERIAL_PORT'),
-            baudrate = os.getenvb(b'SELPI_CONNECTION_SERIAL_BAUDRATE'),
+            os.getenv('SELPI_CONNECTION_SERIAL_PORT'),
+            baudrate = os.getenv('SELPI_CONNECTION_SERIAL_BAUDRATE'),
             timeout = 0.1
         )
         self.__port.flushOutput()
