@@ -47,7 +47,9 @@ class Protocol:
             # if we don't receive anything a few times in a row, fail
             if len(read) == 0:
                 empty_attempts = empty_attempts + 1
-            if empty_attempts >= 3:
+            if empty_attempts >= 2:
+                self.login()
+            if empty_attempts >= 4:
                 raise BufferError("Expected %s bytes, but only able to read %s" % (length, len(self.__read_buffer)))
         buf = self.__read_buffer[0:length]
         self.__read_buffer = self.__read_buffer[length:]
