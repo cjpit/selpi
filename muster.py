@@ -15,6 +15,7 @@ class Muster:
     variables
     """
     def update(self, variables: list):
+        self.__protocol.login()
         ranges = []
         datas = []
         for var in variables:
