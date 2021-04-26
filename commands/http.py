@@ -20,16 +20,7 @@ def run(args):
 
 class HTTPRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
-        auth = b64encode(username + b':' + password)
-        if self.headers.get('Authorization') != ('Basic %s' % auth.decode('ascii')):
-            return self.do_GET_authenticate()
         return self.do_GET_api()
-
-    def do_GET_authenticate(self):
-        self.send_response(401)
-        self.send_header('WWW-Authenticate', 'Basic realm=\"Selpi\"')
-        self.send_header('Content-type', 'application/json')
-        self.end_headers()
 
     def do_GET_api(self):
         self.send_response(200)
