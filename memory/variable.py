@@ -170,8 +170,7 @@ MAP = {
         DESCRIPTION: "Solar Output Percentage",
         ADDRESS: 41121,
         TYPE: "ushort",
-        UNITS: "%",
-        CONVERSION: "percent",
+        UNITS: "%"
     },
 
     "BattInToday": {
@@ -222,13 +221,6 @@ MAP = {
         TYPE: "uint",
         UNITS: "Wh",
         CONVERSION: "ac_wh",
-    },
-    "BattSocPercent": {
-        DESCRIPTION: "Battery State of Charge",
-        ADDRESS: 41089,
-        TYPE: "ushort",
-        UNITS: "%",
-        CONVERSION: "percent",
     },
     "absorb": {
         DESCRIPTION: "Absorb",
