@@ -63,9 +63,20 @@
       </div>
       <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
         <q-chip size="xl" icon="thermostat" >
-        {{ batteryTemp }} °C
+        Batt {{ batteryTemp }} °C
         </q-chip>
       </div>
+      <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+        <q-chip size="xl" icon="thermostat" >
+        Inlet {{ inletTemp }} °C
+        </q-chip>
+      </div>
+      <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+        <q-chip size="xl" icon="thermostat" >
+        Board {{ boardTemp }} °C
+        </q-chip>
+      </div>
+
       <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
         <q-chip size="xl" icon="today" >
         {{ todaysUsage }} Wh
@@ -101,7 +112,12 @@ export default {
     };
   },
   computed: {
-
+    boardTemp() {
+      return this.stat("ControlBoardTemp")
+    },
+    inletTemp() {
+      return this.stat("InletTemp")
+    },
     todaysUsage() {
       return this.stat("LoadAccumulatedToday")
     },
