@@ -105,7 +105,7 @@ export default {
     return {
       stats: [],
       loaded: false,
-      batterySize: 12000,
+      batterySize: 15000,
       shutdownPercentage: 10,
       lastUpdate: Date.now(),
       lastUpdatedHuman: '',
