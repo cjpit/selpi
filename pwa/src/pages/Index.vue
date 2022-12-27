@@ -12,7 +12,7 @@
           track-color="grey-3"
           class="q-ma-md"
         >
-          <q-icon name="battery_full" />{{ soc }}%
+          <q-icon name="battery_full" />{{ Math.round(soc) }}%
         </q-knob>
       </div>
       <div class="col-md-4 col-sm-6 col-xs-12">
@@ -83,6 +83,37 @@
         </q-chip>
       </div>
       <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+        <q-chip size="xl" icon="today" >
+        Since Dusk {{ secondaryKWHUsedSinceDusk }} Wh
+        </q-chip>
+      </div>
+      <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+        <q-chip size="xl" icon="today" >
+        Float {{ floatHours }} H
+        </q-chip>
+      </div>
+      <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+        <q-chip size="xl" icon="today" >
+        S {{ primaryBatterySOC }} %
+        </q-chip>
+      </div>
+      <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+        <q-chip size="xl" icon="today" >
+        S {{ primaryBatteryVolts }} V
+        </q-chip>
+      </div>
+
+
+      
+
+
+      <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+        <q-chip size="xl" icon="today" >
+        Dusk Input Y {{ acInputDuskYesterday }} Wh
+        </q-chip>
+      </div>
+
+      <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
         <q-chip size="xl" icon="update" >
           {{ lastUpdatedHuman }}
         </q-chip>
@@ -97,6 +128,7 @@
   
 <script>
 import human from 'human-time'
+import { date } from 'quasar'
 
 
 export default {
@@ -106,6 +138,8 @@ export default {
       stats: [],
       loaded: false,
       batterySize: 15000,
+      secondaryBatterySize: 12000,
+      secondaryShutdownPercentage: 30,
       shutdownPercentage: 10,
       lastUpdate: Date.now(),
       lastUpdatedHuman: '',
@@ -140,6 +174,13 @@ export default {
       }
       return result
     },
+
+    primaryBatterySOC() {
+      return this.stat("BattSocPercent")
+    },
+    primaryBatteryVolts() {
+      return this.stat("BatteryVolts")
+    },
     load() {
       return this.stat("LoadAcPower")
     },
@@ -149,11 +190,61 @@ export default {
     solarOutputPercentage() {
       return this.stat("PercentageSolarOutput")
     },
+    acInputToday() {
+      return this.stat("ACInputToday")
+    },
+    acInputYesterday() {
+      return this.stat("ACInputYesterday")
+    },
+    batteryVolts() {
+      return this.stat("BatteryVolts")
+    },
+    daysToRecharge() {
+      return this.stat("DaysToRecharge")
+    },
+    floatHours() {
+      return this.stat("FloatHours")
+    },
+    acInputDuskToday() {
+      return this.stat("ACInputDuskToday")
+    },
+    acInputDuskYesterday() {
+      return this.stat("ACInputDuskYesterday")
+    },
+    duskDaysToRecharge() {
+      return this.stat("DuskDaysToRecharge")
+    },
     solarOutputWatts() {
       return this.stat("CombinedKacoAcPowerHiRes")
     },
+    totalPrimaryKwhAvail() {
+      return this.batterySize * ((100 - this.shutdownPercentage) / 100)
+    },
+    totalSecondaryKwhAvail() {
+      return this.secondaryBatterySize * ((100 - this.secondaryShutdownPercentage) / 100)
+    },
+    secondaryKWHUsedSinceDusk() {
+      let secondaryKWHUsedSinceDusk = 0
+      const currentTime = new Date()
+      if (currentTime.getHours() < 16 && this.floatHours < 0.1 ) {
+        secondaryKWHUsedSinceDusk = this.acInputYesterday - this.acInputDuskYesterday + this.acInputToday
+      } else if (currentTime.getHours() < 16) {
+        // Batteries were charged, so we assume the secondary have been charged too.
+        secondaryKWHUsedSinceDusk = 0
+      }
+      if (currentTime.getHours() >= 16) {
+        secondaryKWHUsedSinceDusk = this.acInputToday - this.acInputDuskToday
+      }
+      return secondaryKWHUsedSinceDusk
+    },
     soc() {
-      return this.stat("BattSocPercent")
+      const totalKwhAvail = this.totalPrimaryKwhAvail + this.totalSecondaryKwhAvail
+      const primaryKwhAvail  = this.totalPrimaryKwhAvail * this.stat("BattSocPercent") / 100
+      
+      let secondaryKwhAvail = 0
+      secondaryKwhAvail = this.totalSecondaryKwhAvail - this.secondaryKWHUsedSinceDusk
+      const actualKWHAvail = primaryKwhAvail + secondaryKwhAvail
+      return actualKWHAvail / totalKwhAvail * 100
     },
     socColor() {
       let result = "primary";
@@ -187,8 +278,8 @@ export default {
       return result;
     },
     hoursRemaining() {
-      let percentageLeft = this.stat("BattSocPercent") - this.shutdownPercentage
-      let wattsLeft = this.batterySize * percentageLeft / 100
+      
+      let wattsLeft = (this.totalPrimaryKwhAvail + this.totalSecondaryKwhAvail) * this.soc / 100
       let hoursRemaining = wattsLeft / (this.batteryPower > 0 ? this.batteryPower : 100)
       if (hoursRemaining > 24)  {
         hoursRemaining = 24
