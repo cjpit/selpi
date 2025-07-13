@@ -1,7 +1,7 @@
-FROM python:3
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
-COPY ./requirements.txt /usr/src/app
-RUN pip install -r requirements.txt
-COPY . /usr/src/app
-CMD [ "python","-u","./selpi.py", "http" ]
+FROM ghcr.io/astral-sh/uv:python3.11-bookworm-slim
+ADD ./src /app
+# Sync the project into a new environment, asserting the lockfile is up to date
+WORKDIR /app
+RUN uv sync --locked
+CMD ["uv", "run", "selpi.py", "http"]
+

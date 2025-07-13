@@ -13,7 +13,6 @@
           class="q-ma-md"
         >
           <q-icon name="battery_full" />{{ Math.round(soc) }}%
-          <q-icon name="battery_full" />{{ Math.round(soc) }}%
         </q-knob>
       </div>
       <div class="col-md-4 col-sm-6 col-xs-12">
@@ -98,11 +97,7 @@
         {{ generatorRunningReason }}
         </q-chip>
       </div>
-      <div v-if="generatorCurrentStatus !== 'Not Running'" class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
-        <q-chip size="xl" icon="outlet" >
-        {{ generatorCurrentStatus }}
-        </q-chip>
-      </div>
+      
       <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
         <q-chip size="xl" icon="outlet" >
         Gen Y {{ acInputYesterday }} kWh
@@ -111,6 +106,11 @@
       <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
         <q-chip size="xl" icon="battery_full" >
         Float {{ floatHours }} M
+        </q-chip>
+      </div>
+      <div v-if="generatorCurrentStatus !== 'Not Running'" class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+        <q-chip size="xl" icon="outlet" >
+        {{ generatorCurrentStatus }}
         </q-chip>
       </div>
       <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
@@ -323,13 +323,21 @@ export default {
         case 3:
           return "No Fuel";
         case 4:
-          return "Fault";
+          {
+            var audio = new Audio("/alert.mp3");
+            audio.play();
+            return "Fault";
+          }
         case 5:
           return "Not Available";
         case 6:
           return "Starting";
         case 7:
-          return "Retry Pause";
+          {
+            var audio = new Audio("/alert.mp3");
+            audio.play();
+            return "Retry Pause";
+          }
         case 8:
           return "Stopping";
         case 9:
