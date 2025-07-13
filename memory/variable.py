@@ -240,6 +240,25 @@ MAP = {
         TYPE: "ushort",
         UNITS: "Bool",
     },
+    "GeneratorStartReason": {
+        DESCRIPTION: "Generator Start Reason",
+        ADDRESS: 41198,
+        TYPE: "ushort",
+        UNITS: "Text",
+    },
+    "GeneratorRunningReason": {
+        DESCRIPTION: "Generator Running Reason",
+        ADDRESS: 41087,
+        TYPE: "ushort",
+        UNITS: "Text",
+    },
+    "GeneratorStatus": {
+        DESCRIPTION: "Generator Status",
+        ADDRESS: 41110,
+        TYPE: "ushort",
+        UNITS: "Text",
+    },
+
 
     
     "LoginHash": {

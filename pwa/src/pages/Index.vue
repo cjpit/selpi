@@ -12,7 +12,7 @@
           track-color="grey-3"
           class="q-ma-md"
         >
-          <q-icon name="battery_full" />{{ soc }}%
+          <q-icon name="battery_full" />{{ Math.round(soc) }}%
         </q-knob>
       </div>
       <div class="col-md-4 col-sm-6 col-xs-12">
@@ -79,9 +79,46 @@
 
       <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
         <q-chip size="xl" icon="today" >
-        {{ todaysUsage }} Wh
+        {{ todaysUsage }} kWh
         </q-chip>
       </div>
+      <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+        <q-chip size="xl" icon="outlet" >
+        Gen {{ acInputToday }} kWh
+        </q-chip>
+      </div>
+      <div v-if="generatorStartedBy !== 'Not Running'" class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+        <q-chip size="xl" icon="outlet" >
+        {{ generatorStartedBy }}
+        </q-chip>
+      </div>
+      <div v-if="generatorRunningReason !== 'Not Running'" class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+        <q-chip size="xl" icon="outlet" >
+        {{ generatorRunningReason }}
+        </q-chip>
+      </div>
+      <div v-if="generatorCurrentStatus !== 'Not Running'" class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+        <q-chip size="xl" icon="outlet" >
+        {{ generatorCurrentStatus }}
+        </q-chip>
+      </div>
+      <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+        <q-chip size="xl" icon="outlet" >
+        Gen Y {{ acInputYesterday }} kWh
+        </q-chip>
+      </div>
+      <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+        <q-chip size="xl" icon="battery_full" >
+        Float {{ floatHours }} M
+        </q-chip>
+      </div>
+      <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+        <q-chip size="xl" icon="battery_unknown" >
+        {{ primaryBatteryVolts }} V
+        </q-chip>
+      </div>
+
+
       <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
         <q-chip size="xl" icon="update" >
           {{ lastUpdatedHuman }}
@@ -94,9 +131,15 @@
     </span>  -->
   </q-page>
 </template>
-  
+
 <script>
 import human from 'human-time'
+import { date } from 'quasar'
+
+function round(value, precision) {
+    var multiplier = Math.pow(10, precision || 0);
+    return Math.round(value * multiplier) / multiplier;
+}
 
 
 export default {
@@ -105,7 +148,7 @@ export default {
     return {
       stats: [],
       loaded: false,
-      batterySize: 15000,
+      batterySize: 17000,
       shutdownPercentage: 10,
       lastUpdate: Date.now(),
       lastUpdatedHuman: '',
@@ -119,7 +162,7 @@ export default {
       return this.stat("InletTemp")
     },
     todaysUsage() {
-      return this.stat("LoadAccumulatedToday")
+      return Math.round(this.stat("LoadAccumulatedToday") / 1000)
     },
 
     batteryTemp() {
@@ -140,6 +183,13 @@ export default {
       }
       return result
     },
+
+    primaryBatterySOC() {
+      return this.stat("BattSocPercent")
+    },
+    primaryBatteryVolts() {
+      return this.statfloat("BatteryVolts")
+    },
     load() {
       return this.stat("LoadAcPower")
     },
@@ -149,11 +199,51 @@ export default {
     solarOutputPercentage() {
       return this.stat("PercentageSolarOutput")
     },
+    acInputToday() {
+      return Math.round( this.stat("ACInputToday") / 1000)
+    },
+    acInputYesterday() {
+      return Math.round(this.stat("ACInputYesterday") / 1000)
+    },
+    batteryVolts() {
+      return this.statfloat("BatteryVolts")
+    },
+    daysToRecharge() {
+      return this.stat("DaysToRecharge")
+    },
+    floatHours() {
+      return this.stat("FloatHours")
+    },
+    acInputDuskToday() {
+      return this.stat("ACInputDuskToday")
+    },
+    acInputDuskYesterday() {
+      return this.stat("ACInputDuskYesterday")
+    },
+    duskDaysToRecharge() {
+      return this.stat("DuskDaysToRecharge")
+    },
     solarOutputWatts() {
       return this.stat("CombinedKacoAcPowerHiRes")
     },
+    totalPrimaryKwhAvail() {
+      return this.batterySize * ((100 - this.shutdownPercentage) / 100)
+    },
+    generatorStartedBy() {
+      return this.generatorReason(this.stat("GeneratorStartReason"))
+    },
+    generatorRunningReason() {
+      return this.generatorReason(this.stat("GeneratorRunningReason"))
+    },
+    generatorCurrentStatus() {
+      return this.generatorStatus(this.stat("GeneratorStatus"))
+    },
     soc() {
-      return this.stat("BattSocPercent")
+      const totalKwhAvail = this.totalPrimaryKwhAvail
+      const primaryKwhAvail  = this.totalPrimaryKwhAvail * this.stat("BattSocPercent") / 100
+
+      const actualKWHAvail = primaryKwhAvail
+      return actualKWHAvail / totalKwhAvail * 100
     },
     socColor() {
       let result = "primary";
@@ -187,8 +277,8 @@ export default {
       return result;
     },
     hoursRemaining() {
-      let percentageLeft = this.stat("BattSocPercent") - this.shutdownPercentage
-      let wattsLeft = this.batterySize * percentageLeft / 100
+
+      let wattsLeft = (this.totalPrimaryKwhAvail) * this.soc / 100
       let hoursRemaining = wattsLeft / (this.batteryPower > 0 ? this.batteryPower : 100)
       if (hoursRemaining > 24)  {
         hoursRemaining = 24
@@ -208,6 +298,7 @@ export default {
   beforeDestroy() {
     clearInterval(this.interval)
   },
+
   methods: {
     async getData() {
       this.lastUpdatedHuman = human((Date.now() - this.lastUpdate) / 1000)
@@ -219,12 +310,112 @@ export default {
       } finally {
       }
     },
+    generatorStatus(code) {
+      switch (code)
+      {
+        case 0:
+          return "Not Running";
+        case 1:
+          return "Running";
+        case 2:
+          return "Low Fuel";
+        case 3:
+          return "No Fuel";
+        case 4:
+          return "Fault";
+        case 5:
+          return "Not Available";
+        case 6:
+          return "Starting";
+        case 7:
+          return "Retry Pause";
+        case 8:
+          return "Stopping";
+        case 9:
+          return "Disabled";
+        case 10:
+          return "AC Source Present";
+        default:
+          return "Unknown"
+      }
+    },
+    generatorReason(code) {
+      switch (code)
+      {
+        case 0:
+          return "Not Running";
+        case 1:
+          return "Front Panel";
+        case 2:
+          return "Remote Run Request";
+        case 3:
+          return "Run Schedule";
+        case 4:
+          return "Hi Inverter Temp.";
+        case 5:
+          return "Impending Inverter Shutdown";
+        case 6:
+          return "Synchronisation Fault";
+        case 7:
+          return "State of Charge";
+        case 8:
+          return "Low Battery Volts";
+        case 9:
+          return "Battery Mid Point Voltage Error";
+        case 10:
+          return "Equalising Battery";
+        case 11:
+          return "Hi AC Load";
+        case 12:
+          return "Generator Exercise";
+        case 13:
+          return "Generator Available";
+        case 14:
+          return "Generator Fault";
+        case 15:
+          return "Minimum Runtime";
+        case 16:
+          return "Generator Lock Out Active";
+        case 17:
+          return "Battery Float";
+        case 18:
+          return "Cooling Down";
+        case 19:
+          return "Confirmed Start";
+        case 20:
+          return "Manual";
+        case 21:
+          return "AC Source Present";
+        case 22:
+          return "Disabled";
+        case 23:
+          return "Support Mode";
+        case 24:
+          return "Equalise";
+        case 25:
+          return "Battery Load";
+        case 29:
+          return "Warming Up";
+        default:
+          return ""
+      }
+    },
     stat(name) {
       let result = this.stats.filter(function (item) {
         return item.name === name
       })
       if (result && result.length > 0) {
         return Math.round(result[0].value);
+      } else {
+        return 0
+      }
+    },
+    statfloat(name) {
+      let result = this.stats.filter(function (item) {
+        return item.name === name
+      })
+      if (result && result.length > 0) {
+        return round(result[0].value,2);
       } else {
         return 0
       }

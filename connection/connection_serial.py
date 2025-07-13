@@ -1,10 +1,10 @@
-import serial
+from serial import Serial
 import os
 from . import Connection
 
 class ConnectionSerial(Connection):
     def _connect(self):
-        self.__port = serial.Serial(
+        self.__port = Serial(
             os.getenv('SELPI_CONNECTION_SERIAL_PORT'),
             baudrate = os.getenv('SELPI_CONNECTION_SERIAL_BAUDRATE'),
             timeout = 0.1
