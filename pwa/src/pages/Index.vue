@@ -13,6 +13,7 @@
           class="q-ma-md"
         >
           <q-icon name="battery_full" />{{ Math.round(soc) }}%
+          <q-icon name="battery_full" />{{ Math.round(soc) }}%
         </q-knob>
       </div>
       <div class="col-md-4 col-sm-6 col-xs-12">

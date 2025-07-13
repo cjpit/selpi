@@ -222,6 +222,32 @@ MAP = {
         UNITS: "Wh",
         CONVERSION: "ac_wh",
     },
+    "ACInputToday": {
+        DESCRIPTION: "AC Accumulated Input Today",
+        ADDRESS: 41151,
+        TYPE: "ushort",
+        UNITS: "Wh",
+        CONVERSION: "ac_wh",
+    },
+    "ACInputYesterday": {
+        DESCRIPTION: "AC Accumulated Input Yesterday",
+        ADDRESS: 41440,
+        TYPE: "ushort",
+        UNITS: "Wh",
+        CONVERSION: "ac_wh",
+    },
+    "DaysToRecharge": {
+        DESCRIPTION: "Days to Recharge",
+        ADDRESS: 41070,
+        TYPE: "ushort",
+        UNITS: "Days"
+    },
+    "FloatHours": {
+        DESCRIPTION: "Float hours",
+        ADDRESS: 41148,
+        TYPE: "ushort",
+        UNITS: "Hours"
+    },
     "absorb": {
         DESCRIPTION: "Absorb",
         ADDRESS: 41217,
