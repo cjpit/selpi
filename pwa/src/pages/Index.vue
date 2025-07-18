@@ -125,7 +125,27 @@
           {{ lastUpdatedHuman }}
         </q-chip>
       </div>
-    </div>
+      <div v-if="generatorAlarm" class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+        <q-chip size="xl" icon="alarm" color="red" text-color="white" >
+        GENERATOR ALARM
+        </q-chip>
+      </div>
+      <div v-if="overTempAlarm" class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+        <q-chip size="xl" icon="alarm" color="red" text-color="white" >
+        OVER TEMP ALARM
+        </q-chip>
+      </div>
+      <div v-if="serviceRequiredAlarm" class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+        <q-chip size="xl" icon="alarm" color="red" text-color="white" >
+        SERVICE REQUIRED ALARM
+        </q-chip>
+      </div>
+      <div v-if="shutdownAlarm" class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+        <q-chip size="xl" icon="alarm" color="red" text-color="white" >
+        SHUTDOWN ALARM
+        </q-chip>
+      </div>
+
     <!-- <span v-for="stat in stats" v-bind:key="stat.name">
       {{ stat.name }} [{{ stat.description }}] : {{ Math.round(stat.value) }} {{ stat.units
       }}<br />
@@ -153,6 +173,7 @@ export default {
       shutdownPercentage: 10,
       lastUpdate: Date.now(),
       lastUpdatedHuman: '',
+      alertAudio: null,
     };
   },
   computed: {
@@ -239,6 +260,27 @@ export default {
     generatorCurrentStatus() {
       return this.generatorStatus(this.stat("GeneratorStatus"))
     },
+    generatorAlarm() {
+      return this.stat("GeneratorRed") > 0
+    },
+    overTempAlarm() {
+      return this.stat("OverTempRed") > 0
+      
+    },
+    serviceRequiredAlarm() {
+      return this.stat("ServiceRequiredRed") > 0
+    },
+    shutdownAlarm() {
+      return this.stat("ShutdownRed") > 0
+    },
+    alarm() {
+      let currentAlarm = this.generatorAlarm || this.overTempAlarm || this.serviceRequiredAlarm || this.shudownAlarm
+      if (currentAlarm) {
+        var audio = new Audio("/alert.mp3");
+        audio.play();
+      }
+      return currentAlarm
+    },
     soc() {
       const totalKwhAvail = this.totalPrimaryKwhAvail
       const primaryKwhAvail  = this.totalPrimaryKwhAvail * this.stat("BattSocPercent") / 100
@@ -294,13 +336,24 @@ export default {
     this.getData()
   },
   created() {
+    this.alertAudio = new Audio('/alert.mp3');
     this.interval = setInterval(() => this.getData(), 1000*30)
   },
   beforeDestroy() {
     clearInterval(this.interval)
   },
-
+  watch: {
+    alarm(newVal) {
+      if (newVal) {
+        this.playSound();
+      }
+    }
+  },
   methods: {
+    playSound() {
+      this.alertAudio.currentTime = 0; // reset to start
+      this.alertAudio.play();
+    },
     async getData() {
       this.lastUpdatedHuman = human((Date.now() - this.lastUpdate) / 1000)
       try {
@@ -323,21 +376,13 @@ export default {
         case 3:
           return "No Fuel";
         case 4:
-          {
-            var audio = new Audio("/alert.mp3");
-            audio.play();
             return "Fault";
-          }
         case 5:
           return "Not Available";
         case 6:
           return "Starting";
         case 7:
-          {
-            var audio = new Audio("/alert.mp3");
-            audio.play();
             return "Retry Pause";
-          }
         case 8:
           return "Stopping";
         case 9:

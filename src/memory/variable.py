@@ -284,6 +284,37 @@ MAP = {
         TYPE: "ushort",
         UNITS: "Text",
     },
+    "GeneratorRed": {
+        DESCRIPTION: "Generator Alarm",
+        ADDRESS: 41225,
+        TYPE: "ushort",
+        UNITS: "Bool",
+    },
+    "OverTempRed": {
+        DESCRIPTION: "Over Temp Alarm",
+        ADDRESS: 41229,
+        TYPE: "ushort",
+        UNITS: "Bool",
+    },
+    "ServiceRequiredRed": {
+        DESCRIPTION: "Service Required Alarm",
+        ADDRESS: 41231,
+        TYPE: "ushort",
+        UNITS: "Bool",
+    },
+    "ShutdownRed": {
+        DESCRIPTION: "Shutdown Alarm",
+        ADDRESS: 41233,
+        TYPE: "ushort",
+        UNITS: "Bool",
+    },
+
+
+    
+
+
+
+    
 
 
     

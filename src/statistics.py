@@ -50,6 +50,11 @@ class Statistics():
             variable.create("ACInputToday"),
             variable.create("ACInputYesterday"),
             variable.create("FloatHours"),
+            variable.create("GeneratorRed"),
+            variable.create("OverTempRed"),
+            variable.create("ServiceRequiredRed"),
+            variable.create("ShutdownRed"),
+
         ]
         self.__scales = None
         self.__duskTodayAC = -1
