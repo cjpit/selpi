@@ -47,7 +47,9 @@ class Statistics():
             variable.create("GeneratorStartReason"),
             variable.create("GeneratorRunningReason"),
             variable.create("GeneratorStatus"),
-
+            variable.create("ACInputToday"),
+            variable.create("ACInputYesterday"),
+            variable.create("FloatHours"),
         ]
         self.__scales = None
         self.__duskTodayAC = -1
