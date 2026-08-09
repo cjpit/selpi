@@ -1,0 +1,9 @@
+{% if snapshot.alarms.any %}
+<div class="alarm-banner">
+  <div class="alert alert-danger">
+    {% for alarm in snapshot.alarms["items"] %}
+    <span>{{ alarm.label }}{% if not loop.last %}, {% endif %}</span>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}

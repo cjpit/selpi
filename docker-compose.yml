@@ -11,5 +11,3 @@ services:
       TZ: Australia/Perth
     devices:
       - "/dev/ttyUSB0:/dev/ttyUSB0"
-
-   

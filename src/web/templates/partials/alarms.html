@@ -1,0 +1,11 @@
+{% if snapshot.alarms["items"]|length == 0 %}
+<div class="empty-state">
+  No active alarms.
+</div>
+{% else %}
+<div class="alarm-list">
+  {% for alarm in snapshot.alarms["items"] %}
+  <div class="alert alert-danger">{{ alarm.label }}</div>
+  {% endfor %}
+</div>
+{% endif %}

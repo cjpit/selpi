@@ -1,0 +1,9 @@
+{% if snapshot.meta.connected %}
+<span class="status-connected">Connected</span>
+{% else %}
+<span class="status-disconnected">Disconnected</span>
+{% endif %}
+<span>{{ snapshot.meta.last_updated or '--' }}</span>
+{% if snapshot.meta.error %}
+<span class="status-error">Error: {{ snapshot.meta.error }}</span>
+{% endif %}

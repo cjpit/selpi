@@ -1,30 +1,31 @@
-from http.server import BaseHTTPRequestHandler, HTTPServer
-import json
-from base64 import b64encode
-import settings
-from statistics import Statistics
+from __future__ import annotations
 
-username = settings.getb(b'HTTP_USERNAME')
-password = settings.getb(b'HTTP_PASSWORD')
-statistics = Statistics()
+import logging
+import os
+
+from hypercorn.asyncio import serve as hypercorn_serve  # type: ignore[import-untyped]
+from hypercorn.config import Config  # type: ignore[import-untyped]
+
+from web.app import create_app
+
 
 def add_parser(subparsers):
-    parser = subparsers.add_parser('http', help='start http server')
+    parser = subparsers.add_parser("http", help="start http server")
     parser.set_defaults(func=run)
 
-def run(args):
-    server_address = ('', 8000)
-    print("Starting server")
-    httpd = HTTPServer(server_address, HTTPRequestHandler)
-    httpd.serve_forever()
 
-class HTTPRequestHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        return self.do_GET_api()
+def run(args: object) -> None:
+    host = os.getenv("SELPI_HTTP_HOST", "0.0.0.0")
+    port = int(os.getenv("SELPI_HTTP_PORT", "8000"))
 
-    def do_GET_api(self):
-        self.send_response(200)
-        self.send_header("Content-type", "application/json")
-        self.end_headers()
-        data = json.dumps(obj=statistics.get(), indent=2)
-        self.wfile.write(bytes(data, "utf-8"))
+    app = create_app()
+    config = Config()
+    config.bind = [f"{host}:{port}"]
+    config.use_reloader = False
+
+    logging.getLogger("hypercorn.access").setLevel(logging.WARNING)
+    logging.getLogger("hypercorn.error").setLevel(logging.WARNING)
+
+    import asyncio
+
+    asyncio.run(hypercorn_serve(app, config))

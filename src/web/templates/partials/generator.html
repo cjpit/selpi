@@ -1,0 +1,22 @@
+<div class="grid">
+  <div class="card">
+    <div class="card-title">Status</div>
+    <div class="card-value">{{ snapshot.generator.status }}</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Start Reason</div>
+    <div class="card-value">{{ snapshot.generator.start_reason }}</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Running Reason</div>
+    <div class="card-value">{{ snapshot.generator.running_reason }}</div>
+  </div>
+  <div class="card">
+    <div class="card-title">AC Input Today</div>
+    <div class="card-value">{{ snapshot.generator.ac_today_kwh }} kWh</div>
+  </div>
+  <div class="card">
+    <div class="card-title">AC Input Yesterday</div>
+    <div class="card-value">{{ snapshot.generator.ac_yesterday_kwh }} kWh</div>
+  </div>
+</div>
