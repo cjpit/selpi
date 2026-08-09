@@ -4,7 +4,7 @@ import asyncio
 import logging
 from typing import Any
 
-from quart import Blueprint, render_template, request, jsonify
+from quart import Blueprint, render_template
 
 from datastar_py import consts
 from datastar_py.quart import DatastarResponse, datastar_response
@@ -47,63 +47,52 @@ async def api_stats() -> Any:
     return view_model.snapshot
 
 
-@web_bp.route("/api/generator/control", methods=["POST"])
-async def generator_control() -> Any:
-    """
-    Control the generator by simulating a front panel button press.
-    
-    Expected JSON body: {"action": "start"|"stop"}
-    
-    Short press (1) starts the generator, long press (2) stops it.
-    Returns a Datastar morph patch to update the UI.
-    """
+def _generator_status_morph(message: str, error: bool = False) -> DatastarResponse:
+    """Build a Datastar morph patch updating the generator control status element."""
+    css = "control-status--error" if error else "control-status--success"
+    html = f'<div class="control-status {css}">{message}</div>'
+    return DatastarResponse(ServerSentEventGenerator.patch_elements(
+        html,
+        selector="#generator-status",
+        mode=consts.ElementPatchMode.INNER,
+    ))
+
+
+@web_bp.route("/api/generator/start", methods=["POST"])
+async def generator_start() -> Any:
+    """Start the generator by simulating a front-panel short press (value 1)."""
     from muster import Muster
-    from memory import variable
-    from datastar_py.sse import ServerSentEventGenerator
-    from datastar_py import consts
-    
-    data = await request.get_json()
-    if not data or "action" not in data:
-        error_html = '<div class="control-status control-status--error">Missing action</div>'
-        return DatastarResponse(ServerSentEventGenerator.patch_elements(
-            error_html,
-            selector="#generator-status",
-            mode=consts.ElementPatchMode.INNER,
-        )), 400
-    
-    action = data["action"]
-    if action not in ("start", "stop"):
-        error_html = '<div class="control-status control-status--error">Invalid action</div>'
-        return DatastarResponse(ServerSentEventGenerator.patch_elements(
-            error_html,
-            selector="#generator-status",
-            mode=consts.ElementPatchMode.INNER,
-        )), 400
-    
-    # Short press (1) = start, Long press (2) = stop
-    press_value = 1 if action == "start" else 2
-    
+
+    status = view_model.snapshot.get("generator", {}).get("status", "")
+    if status in ("Running", "Starting", "Stopping"):
+        logger.info("Generator start ignored: already %s", status)
+        return _generator_status_morph(f"Generator already {status.lower()}", error=True)
+
     try:
         muster = Muster()
-        muster.write("GeneratorBtnPressPort1", press_value)
-        logger.info("Generator %s requested (button press value=%d)", action, press_value)
-        
-        # Return a morph patch showing the command was sent
-        success_html = (
-            '<div class="control-status control-status--success">'
-            f'Generator {action} command sent'
-            '</div>'
-        )
-        return DatastarResponse(ServerSentEventGenerator.patch_elements(
-            success_html,
-            selector="#generator-status",
-            mode=consts.ElementPatchMode.INNER,
-        ))
+        muster.write("GeneratorBtnPressPort1", 1)
+        logger.info("Generator start requested")
+        return _generator_status_morph("Generator start command sent")
     except Exception as exc:
-        logger.exception("Generator control failed")
-        error_html = f'<div class="control-status control-status--error">{exc}</div>'
-        return DatastarResponse(ServerSentEventGenerator.patch_elements(
-            error_html,
-            selector="#generator-status",
-            mode=consts.ElementPatchMode.INNER,
-        )), 500
+        logger.exception("Generator start failed")
+        return _generator_status_morph(str(exc), error=True)
+
+
+@web_bp.route("/api/generator/stop", methods=["POST"])
+async def generator_stop() -> Any:
+    """Stop the generator by simulating a front-panel long press (value 2)."""
+    from muster import Muster
+
+    status = view_model.snapshot.get("generator", {}).get("status", "")
+    if status in ("Not Running", "Starting", "Stopping"):
+        logger.info("Generator stop ignored: already %s", status)
+        return _generator_status_morph(f"Generator already {status.lower()}", error=True)
+
+    try:
+        muster = Muster()
+        muster.write("GeneratorBtnPressPort1", 2)
+        logger.info("Generator stop requested")
+        return _generator_status_morph("Generator stop command sent")
+    except Exception as exc:
+        logger.exception("Generator stop failed")
+        return _generator_status_morph(str(exc), error=True)
