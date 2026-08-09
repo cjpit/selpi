@@ -1,0 +1,119 @@
+<div class="section-header">DC History</div>
+<div class="grid">
+  <div class="card">
+    <div class="card-title">Inverter DC Energy</div>
+    {% for item in snapshot.history.dc.inverter %}
+    <div class="metric-row">
+      <span class="metric-label">{{ item.label }}</span>
+      <span class="metric-value">{{ item.value }} {{ item.unit }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="card">
+    <div class="card-title">Shunt 1 Energy</div>
+    {% for item in snapshot.history.dc.shunt1 %}
+    <div class="metric-row">
+      <span class="metric-label">{{ item.label }}</span>
+      <span class="metric-value">{{ item.value }} {{ item.unit }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="card">
+    <div class="card-title">Shunt 2 Energy</div>
+    {% for item in snapshot.history.dc.shunt2 %}
+    <div class="metric-row">
+      <span class="metric-label">{{ item.label }}</span>
+      <span class="metric-value">{{ item.value }} {{ item.unit }}</span>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <div class="card-title">Battery In Energy</div>
+    {% for item in snapshot.history.dc.battery %}
+      {% if item.label.startswith('In') %}
+      <div class="metric-row">
+        <span class="metric-label">{{ item.label }}</span>
+        <span class="metric-value">{{ item.value }} {{ item.unit }}</span>
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+  <div class="card">
+    <div class="card-title">Battery Out Energy</div>
+    {% for item in snapshot.history.dc.battery %}
+      {% if item.label.startswith('Out') %}
+      <div class="metric-row">
+        <span class="metric-label">{{ item.label }}</span>
+        <span class="metric-value">{{ item.value }} {{ item.unit }}</span>
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+  <div class="card">
+    <div class="card-title">Float Hours</div>
+    {% for item in snapshot.history.dc.battery %}
+      {% if item.label.startswith('Float') %}
+      <div class="metric-row">
+        <span class="metric-label">{{ item.label }}</span>
+        <span class="metric-value">{{ item.value }} {{ item.unit }}</span>
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+
+<div class="section-header">AC History</div>
+<div class="grid">
+  <div class="card">
+    <div class="card-title">AC Load Energy</div>
+    {% for item in snapshot.history.ac.load %}
+    <div class="metric-row">
+      <span class="metric-label">{{ item.label }}</span>
+      <span class="metric-value">{{ item.value }} {{ item.unit }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="card">
+    <div class="card-title">AC Input Energy</div>
+    {% for item in snapshot.history.ac.input %}
+      {% if not item.label.startswith('Input Hrs') %}
+      <div class="metric-row">
+        <span class="metric-label">{{ item.label }}</span>
+        <span class="metric-value">{{ item.value }} {{ item.unit }}</span>
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+  <div class="card">
+    <div class="card-title">AC Export Energy</div>
+    {% for item in snapshot.history.ac.export %}
+    <div class="metric-row">
+      <span class="metric-label">{{ item.label }}</span>
+      <span class="metric-value">{{ item.value }} {{ item.unit }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="card">
+    <div class="card-title">AC Solar (Kaco) Energy</div>
+    {% for item in snapshot.history.ac.solar %}
+    <div class="metric-row">
+      <span class="metric-label">{{ item.label }}</span>
+      <span class="metric-value">{{ item.value }} {{ item.unit }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="card">
+    <div class="card-title">AC Input Hours</div>
+    {% for item in snapshot.history.ac.input %}
+      {% if item.label.startswith('Input Hrs') %}
+      <div class="metric-row">
+        <span class="metric-label">{{ item.label|replace('Input Hrs ', '') }}</span>
+        <span class="metric-value">{{ item.value }} {{ item.unit }}</span>
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>

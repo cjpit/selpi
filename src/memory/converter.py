@@ -35,6 +35,24 @@ SHUNT_NAMES = {
 def _convert_ac_w(raw, scales):
     return raw * scales['CommonScaleForAcVolts'] * scales['CommonScaleForAcCurrent'] / MAGIC_AC_W_DIVISOR
 
+def _convert_ac_w_ushort(raw, scales):
+    return raw * scales['CommonScaleForAcVolts'] * scales['CommonScaleForAcCurrent'] / MAGIC_AC_W_DIVISOR
+
+def _convert_ac_v(raw, scales):
+    return raw * scales['CommonScaleForAcVolts'] / MAGIC_AC_W_DIVISOR
+
+def _convert_dc_current(raw, scales):
+    return raw * scales['CommonScaleForDcCurrent'] / (MAGIC * 100.0)
+
+def _convert_centi_hz(raw, scales):
+    return raw / 100.0
+
+def _convert_percent_ushort(raw, scales):
+    return raw / 10.0
+
+def _convert_minutes_to_hours(raw, scales):
+    return raw / 60.0
+
 def _convert_ac_wh(raw, scales):
     return raw * MAGIC_WH_MULTIPLIER * scales['CommonScaleForAcVolts'] * scales['CommonScaleForAcCurrent'] / MAGIC_WH_DIVISOR
 

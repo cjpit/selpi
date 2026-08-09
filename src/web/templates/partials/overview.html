@@ -1,3 +1,12 @@
+{% if snapshot.attention.any %}
+<div class="alert alert-danger attention-banner">
+  <strong>Attention Required</strong>
+  {% for reason in snapshot.attention.reasons %}
+  <div class="attention-reason">{{ reason }}</div>
+  {% endfor %}
+</div>
+{% endif %}
+
 <div class="grid">
   <div class="card">
     <div class="card-title">State of Charge</div>
@@ -22,5 +31,21 @@
   <div class="card">
     <div class="card-title">Charge State</div>
     <div class="card-value">{{ snapshot.overview.battery_state }}</div>
+  </div>
+  <div class="card">
+    <div class="card-title">AC Out Status</div>
+    <div class="card-value">{{ snapshot.overview.ac_out_status }}</div>
+  </div>
+  <div class="card">
+    <div class="card-title">AC Source Status</div>
+    <div class="card-value">{{ snapshot.overview.ac_source_status }}</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Charge Status</div>
+    <div class="card-value">{{ snapshot.overview.charge_status }}</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Inverter Frequency</div>
+    <div class="card-value">{{ snapshot.overview.inv_freq_hz }} Hz</div>
   </div>
 </div>

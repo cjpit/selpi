@@ -1,19 +1,43 @@
 <div class="grid">
   <div class="card">
-    <div class="card-title">Voltage</div>
+    <div class="card-title">Battery Volts</div>
     <div class="card-value">{{ snapshot.battery.volts }} V</div>
   </div>
   <div class="card">
-    <div class="card-title">SOC</div>
+    <div class="card-title">State of Charge</div>
     <div class="card-value">{{ snapshot.battery.soc }}%</div>
   </div>
   <div class="card">
-    <div class="card-title">Power</div>
+    <div class="card-title">Battery Power</div>
     <div class="card-value">{{ snapshot.battery.power_w }} W</div>
   </div>
   <div class="card">
+    <div class="card-title">Battery Current</div>
+    <div class="card-value">{{ snapshot.battery.current_a }} A</div>
+  </div>
+  <div class="card">
+    <div class="card-title">DC Current</div>
+    <div class="card-value">{{ snapshot.battery.dc_current_a }} A</div>
+  </div>
+  <div class="card">
     <div class="card-title">Temperature</div>
-    <div class="card-value">{{ snapshot.battery.temp_c }} &deg;C</div>
+    <div class="card-value">{{ snapshot.battery.temp_c }} °C</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Shunt 1 Amps</div>
+    <div class="card-value">{{ snapshot.battery.shunt1_amps }} A</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Shunt 1 Power</div>
+    <div class="card-value">{{ snapshot.battery.shunt1_power_w }} W</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Shunt 2 Amps</div>
+    <div class="card-value">{{ snapshot.battery.shunt2_amps }} A</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Shunt 2 Power</div>
+    <div class="card-value">{{ snapshot.battery.shunt2_power_w }} W</div>
   </div>
   <div class="card">
     <div class="card-title">In Today</div>

@@ -12,6 +12,30 @@
     <div class="card-value">{{ snapshot.generator.running_reason }}</div>
   </div>
   <div class="card">
+    <div class="card-title">Generator Power</div>
+    <div class="card-value">{{ snapshot.generator.power_w }} W</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Power 5min Avg</div>
+    <div class="card-value">{{ snapshot.generator.power_5min_avg_w }} W</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Generator RMS Volts</div>
+    <div class="card-value">{{ snapshot.generator.rms_volts }} V</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Generator RMS Amps</div>
+    <div class="card-value">{{ snapshot.generator.rms_amps }} A</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Input AC Hz</div>
+    <div class="card-value">{{ snapshot.generator.input_hz }} Hz</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Max Available Input</div>
+    <div class="card-value">{{ snapshot.generator.max_available_input_w }} W</div>
+  </div>
+  <div class="card">
     <div class="card-title">AC Input Today</div>
     <div class="card-value">{{ snapshot.generator.ac_today_kwh }} kWh</div>
   </div>

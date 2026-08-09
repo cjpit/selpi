@@ -1,0 +1,59 @@
+<div class="section-header">System Regulation</div>
+<div class="grid">
+  {% for item in snapshot.extra.system_regulation %}
+  <div class="card">
+    <div class="card-title">{{ item.label }}</div>
+    <div class="card-value">{{ item.value }} {{ item.unit }}</div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="section-header">Battery (Technical)</div>
+<div class="grid">
+  {% for item in snapshot.extra.battery %}
+  <div class="card">
+    <div class="card-title">{{ item.label }}</div>
+    <div class="card-value">{{ item.value }} {{ item.unit }}</div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="section-header">Power (Technical)</div>
+<div class="grid">
+  {% for item in snapshot.extra.power %}
+  <div class="card">
+    <div class="card-title">{{ item.label }}</div>
+    <div class="card-value">{{ item.value }} {{ item.unit }}</div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="section-header">Unit Identification</div>
+<div class="grid">
+  {% for item in snapshot.extra.unit %}
+  <div class="card">
+    <div class="card-title">{{ item.label }}</div>
+    <div class="card-value">{{ item.value }} {{ item.unit }}</div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="section-header">Component Life</div>
+<div class="grid">
+  {% for item in snapshot.extra.component_life %}
+  <div class="card">
+    <div class="card-title">{{ item.label }}</div>
+    <div class="card-value">{{ item.value }} {{ item.unit }}</div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="section-header">Digital I/O</div>
+<div class="grid">
+  {% for item in snapshot.extra.io %}
+  <div class="card">
+    <div class="card-title">{{ item.label }}</div>
+    <div class="card-value">{{ item.value }} {{ item.unit }}</div>
+  </div>
+  {% endfor %}
+</div>

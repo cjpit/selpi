@@ -1,10 +1,22 @@
 <div class="grid">
   <div class="card">
-    <div class="card-title">Load Power</div>
+    <div class="card-title">AC Load Power</div>
     <div class="card-value">{{ snapshot.load.power_w }} W</div>
   </div>
   <div class="card">
-    <div class="card-title">Today</div>
+    <div class="card-title">Load Today</div>
     <div class="card-value">{{ snapshot.load.today_kwh }} kWh</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Inverter AC Power</div>
+    <div class="card-value">{{ snapshot.load.inverter_power_w }} W</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Inverter RMS Volts</div>
+    <div class="card-value">{{ snapshot.load.inverter_rms_volts }} V</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Inverter RMS Amps</div>
+    <div class="card-value">{{ snapshot.load.inverter_rms_amps }} A</div>
   </div>
 </div>

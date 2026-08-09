@@ -20,6 +20,8 @@
       <button class="tab-btn" data-class:active="$tab === 'load'" data-on:click="$tab = 'load'">Load</button>
       <button class="tab-btn" data-class:active="$tab === 'generator'" data-on:click="$tab = 'generator'">Generator</button>
       <button class="tab-btn" data-class:active="$tab === 'temperatures'" data-on:click="$tab = 'temperatures'">Temperatures</button>
+      <button class="tab-btn" data-class:active="$tab === 'history'" data-on:click="$tab = 'history'">History</button>
+      <button class="tab-btn" data-class:active="$tab === 'extra'" data-on:click="$tab = 'extra'">Extra</button>
       <button class="tab-btn" data-class:active="$tab === 'alarms'" data-on:click="$tab = 'alarms'">Alarms</button>
     </nav>
 
@@ -40,6 +42,12 @@
     </div>
     <div data-show="$tab === 'temperatures'" id="tab-temperatures">
       {% include "partials/temperatures.html" %}
+    </div>
+    <div data-show="$tab === 'history'" id="tab-history">
+      {% include "partials/history.html" %}
+    </div>
+    <div data-show="$tab === 'extra'" id="tab-extra">
+      {% include "partials/extra.html" %}
     </div>
     <div data-show="$tab === 'alarms'" id="tab-alarms">
       {% include "partials/alarms.html" %}

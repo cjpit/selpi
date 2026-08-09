@@ -223,3 +223,50 @@ html, body {
   color: var(--danger);
 }
 
+/* Section headers for extra/history tabs */
+.section-header {
+  color: var(--accent);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0.75rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-header:first-child {
+  margin-top: 0;
+}
+
+/* Metric rows (used in history/extra detail cards) */
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.2rem 0;
+  font-size: 0.85rem;
+  border-bottom: 1px solid rgba(48, 54, 61, 0.5);
+}
+
+.metric-row:last-child {
+  border-bottom: none;
+}
+
+.metric-label {
+  color: var(--muted);
+}
+
+.metric-value {
+  color: var(--text);
+  font-weight: 500;
+}
+
+/* Attention Required banner */
+.attention-banner {
+  margin-bottom: 1rem;
+}
+
+.attention-reason {
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+  padding-left: 1rem;
+}
+

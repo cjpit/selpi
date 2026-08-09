@@ -19,6 +19,9 @@ class DashboardViewModel:
             "generator": {},
             "temperatures": {},
             "alarms": {"any": False, "items": []},
+            "attention": {"any": False, "reasons": []},
+            "history": {"dc": {}, "ac": {}},
+            "extra": {},
         }
         self.__error: str | None = None
 
