@@ -31,7 +31,7 @@ async def sse() -> Any:
 
     async def event_generator():
         while True:
-            snapshot = view_model.refresh()
+            snapshot = view_model.snapshot
 
             # Render each section server-side and push as morph patches
             header_html = await render_template(
