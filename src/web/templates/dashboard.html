@@ -22,25 +22,25 @@
     <button class="tab-btn" data-class:active="$tab === 'alarms'" data-on:click="$tab = 'alarms'">Alarms</button>
   </nav>
 
-  <div data-show="$tab === 'overview'" id="tab-overview">
+  <div data-class:hidden="$tab !== 'overview'" id="tab-overview">
     {% include "partials/overview.html" %}
   </div>
-  <div data-show="$tab === 'battery'" id="tab-battery">
+  <div data-class:hidden="$tab !== 'battery'" id="tab-battery">
     {% include "partials/battery.html" %}
   </div>
-  <div data-show="$tab === 'solar'" id="tab-solar">
+  <div data-class:hidden="$tab !== 'solar'" id="tab-solar">
     {% include "partials/solar.html" %}
   </div>
-  <div data-show="$tab === 'load'" id="tab-load">
+  <div data-class:hidden="$tab !== 'load'" id="tab-load">
     {% include "partials/load.html" %}
   </div>
-  <div data-show="$tab === 'generator'" id="tab-generator">
+  <div data-class:hidden="$tab !== 'generator'" id="tab-generator">
     {% include "partials/generator.html" %}
   </div>
-  <div data-show="$tab === 'temperatures'" id="tab-temperatures">
+  <div data-class:hidden="$tab !== 'temperatures'" id="tab-temperatures">
     {% include "partials/temperatures.html" %}
   </div>
-  <div data-show="$tab === 'alarms'" id="tab-alarms">
+  <div data-class:hidden="$tab !== 'alarms'" id="tab-alarms">
     {% include "partials/alarms.html" %}
   </div>
 </div>

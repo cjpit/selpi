@@ -152,3 +152,7 @@ html, body {
   border: 1px dashed var(--border);
   border-radius: 0.5rem;
 }
+
+.hidden {
+  display: none;
+}
