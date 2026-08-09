@@ -730,6 +730,8 @@ def build_view_model(raw_stats: list[dict[str, Any]]) -> dict[str, Any]:
         "battery": {
             "volts": round(stat_value(stats_by_name, "BatteryVolts"), 2),
             "soc": round(batt_soc, 1),
+            "soc_pct": round(soc_pct, 1),
+            "soc_color": soc_color(soc_pct),
             "power_w": int(round(stat_value(stats_by_name, "DCBatteryPower"))),
             "temp_c": int(round(stat_value(stats_by_name, "BatteryTemperature"))),
             "current_a": round(stat_value(stats_by_name, "DCBatteryCurrent"), 2),

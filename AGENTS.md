@@ -216,6 +216,8 @@ Open `http://<pi-ip>:8000`.
 
 ### Running tests
 
+> **Do not run tests.** Agents should not execute `pytest` or any test suite. Tests are run by the developer outside the agent workflow.
+
 ```bash
 cd src
 uv run pytest

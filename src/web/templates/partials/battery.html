@@ -5,7 +5,10 @@
   </div>
   <div class="card">
     <div class="card-title">State of Charge</div>
-    <div class="card-value">{{ snapshot.battery.soc }}%</div>
+    <div class="card-value color-{{ snapshot.battery.soc_color }}">{{ snapshot.battery.soc }}%</div>
+    <div class="progress-bar">
+      <div class="progress-bar-fill color-{{ snapshot.battery.soc_color }}" style="width: {{ snapshot.battery.soc_pct }}%"></div>
+    </div>
   </div>
   <div class="card">
     <div class="card-title">Battery Power</div>
