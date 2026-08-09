@@ -24,15 +24,11 @@
     <div id="generator-status"></div>
     <div class="button-group">
       <button
-        data-on:click="@post('/api/generator/start')"
-        data-indicator="generator-busy"
-        data-attr:disabled="$generator_busy"
+        data-on:click="el.classList.add('loading'); @post('/api/generator/start')"
         class="btn btn-start"
       >Start</button>
       <button
-        data-on:click="@post('/api/generator/stop')"
-        data-indicator="generator-busy"
-        data-attr:disabled="$generator_busy"
+        data-on:click="el.classList.add('loading'); @post('/api/generator/stop')"
         class="btn btn-stop"
       >Stop</button>
     </div>

@@ -196,6 +196,12 @@ html, body {
   cursor: not-allowed;
 }
 
+.btn.loading {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 /* Generator control status messages */
 .control-status {
   margin-bottom: 0.75rem;
