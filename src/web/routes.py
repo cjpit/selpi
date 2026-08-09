@@ -6,6 +6,7 @@ from typing import Any
 
 from quart import Blueprint, render_template
 
+from datastar_py import consts
 from datastar_py.quart import DatastarResponse, datastar_response
 from datastar_py.sse import ServerSentEventGenerator
 
@@ -34,7 +35,9 @@ async def sse() -> Any:
             "partials/dashboard_content.html", snapshot=snapshot
         )
         yield ServerSentEventGenerator.patch_elements(
-            content_html, selector="#content"
+            content_html,
+            selector="#content",
+            mode=consts.ElementPatchMode.INNER,
         )
         await asyncio.sleep(refresh_seconds())
 
