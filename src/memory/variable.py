@@ -290,6 +290,24 @@ MAP = {
         TYPE: "ushort",
         UNITS: "Bool",
     },
+    "GeneratorBtnPressPort1": {
+        DESCRIPTION: "Generator Button Press Port 1",
+        ADDRESS: 41522,
+        TYPE: "ushort",
+        UNITS: "Text",
+    },
+    "GeneratorBtnStatusPort1": {
+        DESCRIPTION: "Generator Button Status Port 1",
+        ADDRESS: 41236,
+        TYPE: "ushort",
+        UNITS: "Text",
+    },
+    "GeneratorBtnPressAllowed": {
+        DESCRIPTION: "Generator Button Press Allowed",
+        ADDRESS: 41242,
+        TYPE: "ushort",
+        UNITS: "Bool",
+    },
     "OverTempRed": {
         DESCRIPTION: "Over Temp Alarm",
         ADDRESS: 41229,

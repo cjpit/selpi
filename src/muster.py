@@ -1,5 +1,7 @@
 from memory import Protocol
 from memory import extract, Data, reduce
+from memory.variable import TYPES, MAP
+import struct
 import logging
 
 """
@@ -26,3 +28,17 @@ class Muster:
             datas.append(Data(range, res))
         for var in variables:
             var.bytes = extract(var.range, datas).bytes
+
+    """
+    Write a value to a variable in the SP Pro memory
+    """
+    def write(self, name: str, value: int):
+        self.__protocol.login()
+        if name not in MAP:
+            raise ValueError("Unknown variable: %s" % name)
+        var_info = MAP[name]
+        type_info = TYPES[var_info['type']]
+        fmt = type_info['format']
+        data = struct.pack(fmt, value)
+        logging.debug("write: %s = %s" % (name, value))
+        self.__protocol.write(var_info['address'], data)

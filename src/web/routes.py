@@ -4,7 +4,7 @@ import asyncio
 import logging
 from typing import Any
 
-from quart import Blueprint, render_template
+from quart import Blueprint, render_template, request, jsonify
 
 from datastar_py import consts
 from datastar_py.quart import DatastarResponse, datastar_response
@@ -45,3 +45,35 @@ async def sse() -> Any:
 @web_bp.route("/api/stats")
 async def api_stats() -> Any:
     return view_model.snapshot
+
+
+@web_bp.route("/api/generator/control", methods=["POST"])
+async def generator_control() -> Any:
+    """
+    Control the generator by simulating a front panel button press.
+    
+    Expected JSON body: {"action": "start"|"stop"}
+    
+    Short press (1) starts the generator, long press (2) stops it.
+    """
+    from muster import Muster
+    from memory import variable
+    
+    data = await request.get_json()
+    if not data or "action" not in data:
+        return jsonify({"error": "Missing 'action' in request body"}), 400
+    
+    action = data["action"]
+    if action not in ("start", "stop"):
+        return jsonify({"error": "Invalid action. Must be 'start' or 'stop'"}), 400
+    
+    # Short press (1) = start, Long press (2) = stop
+    press_value = 1 if action == "start" else 2
+    
+    try:
+        muster = Muster()
+        muster.write("GeneratorBtnPressPort1", press_value)
+        return jsonify({"status": "success", "action": action})
+    except Exception as exc:
+        logger.exception("Generator control failed")
+        return jsonify({"error": str(exc)}), 500

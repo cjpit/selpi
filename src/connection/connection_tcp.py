@@ -1,3 +1,6 @@
+import os
+import socket
+
 from . import Connection
 
 class ConnectionTCP(Connection):
