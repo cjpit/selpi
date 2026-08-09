@@ -55,17 +55,30 @@ async def generator_control() -> Any:
     Expected JSON body: {"action": "start"|"stop"}
     
     Short press (1) starts the generator, long press (2) stops it.
+    Returns a Datastar morph patch to update the UI.
     """
     from muster import Muster
     from memory import variable
+    from datastar_py.sse import ServerSentEventGenerator
+    from datastar_py import consts
     
     data = await request.get_json()
     if not data or "action" not in data:
-        return jsonify({"error": "Missing 'action' in request body"}), 400
+        error_html = '<div class="control-status control-status--error">Missing action</div>'
+        return DatastarResponse(ServerSentEventGenerator.patch_elements(
+            error_html,
+            selector="#generator-status",
+            mode=consts.ElementPatchMode.INNER,
+        )), 400
     
     action = data["action"]
     if action not in ("start", "stop"):
-        return jsonify({"error": "Invalid action. Must be 'start' or 'stop'"}), 400
+        error_html = '<div class="control-status control-status--error">Invalid action</div>'
+        return DatastarResponse(ServerSentEventGenerator.patch_elements(
+            error_html,
+            selector="#generator-status",
+            mode=consts.ElementPatchMode.INNER,
+        )), 400
     
     # Short press (1) = start, Long press (2) = stop
     press_value = 1 if action == "start" else 2
@@ -73,7 +86,24 @@ async def generator_control() -> Any:
     try:
         muster = Muster()
         muster.write("GeneratorBtnPressPort1", press_value)
-        return jsonify({"status": "success", "action": action})
+        logger.info("Generator %s requested (button press value=%d)", action, press_value)
+        
+        # Return a morph patch showing the command was sent
+        success_html = (
+            '<div class="control-status control-status--success">'
+            f'Generator {action} command sent'
+            '</div>'
+        )
+        return DatastarResponse(ServerSentEventGenerator.patch_elements(
+            success_html,
+            selector="#generator-status",
+            mode=consts.ElementPatchMode.INNER,
+        ))
     except Exception as exc:
         logger.exception("Generator control failed")
-        return jsonify({"error": str(exc)}), 500
+        error_html = f'<div class="control-status control-status--error">{exc}</div>'
+        return DatastarResponse(ServerSentEventGenerator.patch_elements(
+            error_html,
+            selector="#generator-status",
+            mode=consts.ElementPatchMode.INNER,
+        )), 500

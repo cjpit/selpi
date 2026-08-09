@@ -21,15 +21,18 @@
   </div>
   <div class="card" id="generator-control">
     <div class="card-title">Control</div>
+    <div id="generator-status"></div>
     <div class="button-group">
       <button
         data-on:click="$post('/api/generator/control', {action: 'start'})"
-        data-indicator="generator-start-btn"
+        data-indicator="generator-busy"
+        data-attr:disabled="generator_busy"
         class="btn btn-start"
       >Start</button>
       <button
         data-on:click="$post('/api/generator/control', {action: 'stop'})"
-        data-indicator="generator-stop-btn"
+        data-indicator="generator-busy"
+        data-attr:disabled="generator_busy"
         class="btn btn-stop"
       >Stop</button>
     </div>
