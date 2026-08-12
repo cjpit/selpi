@@ -1,15 +1,20 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 from statistics import Statistics
 from typing import Any
 
+from history import HistoryStore
 from web.formatting import build_view_model
+
+logger = logging.getLogger(__name__)
 
 
 class DashboardViewModel:
     def __init__(self) -> None:
         self.__statistics = Statistics()
+        self.__history = HistoryStore()
         self.__snapshot: dict[str, Any] = {
             "meta": {"last_updated": None, "connected": False, "error": None},
             "overview": {},
@@ -29,6 +34,10 @@ class DashboardViewModel:
         try:
             raw = self.__statistics.get()
             self.__snapshot = build_view_model(raw)
+            try:
+                self.__history.record(raw)
+            except Exception:
+                logger.warning("Failed to record history", exc_info=True)
             self.__error = None
         except Exception as exc:  # pragma: no cover - hardware path
             self.__error = str(exc)

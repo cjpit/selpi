@@ -9,5 +9,8 @@ services:
     restart: always
     environment:
       TZ: Australia/Perth
+      SELPI_HISTORY_DB_PATH: /data/selpi-history.db
+    volumes:
+      - ./data:/data
     devices:
       - "/dev/ttyUSB0:/dev/ttyUSB0"

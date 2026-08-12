@@ -6,8 +6,12 @@
   <title>Selectronics Manager</title>
   <script type="module" src="https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.2/bundles/datastar.js"></script>
   <link rel="stylesheet" href="/static/css/app.css" />
+  <!-- uPlot charts (CDN) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uplot@1.6.31/dist/uPlot.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/uplot@1.6.31/dist/uPlot.iife.min.js"></script>
 </head>
 <body class="dark">
   {% block body %}{% endblock %}
+  <script src="/static/js/charts.js"></script>
 </body>
 </html>

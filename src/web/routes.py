@@ -4,12 +4,13 @@ import asyncio
 import logging
 from typing import Any
 
-from quart import Blueprint, render_template
+from quart import Blueprint, jsonify, render_template, request
 
 from datastar_py import consts
 from datastar_py.quart import DatastarResponse, datastar_response
 from datastar_py.sse import ServerSentEventGenerator
 
+from history import HistoryStore, TRACKED_METRICS
 from web.viewmodel import DashboardViewModel
 from web.formatting import refresh_seconds
 
@@ -17,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 web_bp = Blueprint("web", __name__)
 view_model = DashboardViewModel()
+history_store = HistoryStore()
 
 
 @web_bp.route("/")
@@ -45,6 +47,34 @@ async def sse() -> Any:
 @web_bp.route("/api/stats")
 async def api_stats() -> Any:
     return view_model.snapshot
+
+
+@web_bp.route("/api/history/<variable_name>")
+async def api_history(variable_name: str) -> Any:
+    """Return historical time-series data for a variable.
+
+    Query params:
+      range: 1h | 6h | 24h | 7d | 30d | 1y  (default: 24h)
+    """
+    range_str = request.args.get("range", "24h")
+    valid_ranges = {"1h", "6h", "24h", "7d", "30d", "1y"}
+    if range_str not in valid_ranges:
+        return jsonify({"error": f"Invalid range. Must be one of: {', '.join(sorted(valid_ranges))}"}), 400
+
+    data = await asyncio.to_thread(history_store.query, variable_name, range_str)
+    return jsonify({
+        "variable": variable_name,
+        "range": range_str,
+        "points": data,
+    })
+
+
+@web_bp.route("/api/history/variables")
+async def api_history_variables() -> Any:
+    """Return the list of tracked metric names available for charting."""
+    return jsonify({
+        "variables": sorted(TRACKED_METRICS),
+    })
 
 
 def _generator_status_morph(message: str, error: bool = False) -> DatastarResponse:
