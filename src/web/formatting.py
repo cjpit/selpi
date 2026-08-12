@@ -443,6 +443,40 @@ def _kv_kwh(stat: float, decimals: int = 2) -> float:
     return round(stat / 1000.0, decimals)
 
 
+def _flow_speed(watts: float) -> str:
+    """Return SVG animateMotion duration string based on power magnitude."""
+    if watts < 500:
+        return "3s"
+    if watts < 2000:
+        return "1.5s"
+    return "0.8s"
+
+
+def _build_flow(stats_by_name: dict[str, Any]) -> dict[str, Any]:
+    """Build the energy flow diagram data."""
+    solar_w = stat_value(stats_by_name, "CombinedKacoAcPowerHiRes")
+    load_w = stat_value(stats_by_name, "LoadAcPower")
+    battery_w = stat_value(stats_by_name, "DCBatteryPower")
+    gen_power = stat_value(stats_by_name, "ACGeneratorPower")
+
+    return {
+        "solar_w": int(round(solar_w)),
+        "solar_active": solar_w > 5,
+        "solar_speed": _flow_speed(solar_w),
+        "load_w": int(round(load_w)),
+        "load_active": load_w > 5,
+        "load_speed": _flow_speed(load_w),
+        "battery_w": int(round(battery_w)),
+        "battery_charging": battery_w < -5,
+        "battery_discharging": battery_w > 5,
+        "battery_active": abs(battery_w) > 5,
+        "battery_speed": _flow_speed(abs(battery_w)),
+        "generator_w": int(round(gen_power)),
+        "generator_active": gen_power > 5,
+        "generator_speed": _flow_speed(gen_power),
+    }
+
+
 def build_view_model(raw_stats: list[dict[str, Any]]) -> dict[str, Any]:
     stats_by_name = {item["name"]: item for item in raw_stats}
 
@@ -792,4 +826,5 @@ def build_view_model(raw_stats: list[dict[str, Any]]) -> dict[str, Any]:
         "attention": attention,
         "history": history,
         "extra": extra,
+        "flow": _build_flow(stats_by_name),
     }

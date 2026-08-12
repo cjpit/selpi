@@ -27,6 +27,7 @@ class DashboardViewModel:
             "attention": {"any": False, "reasons": []},
             "history": {"dc": {}, "ac": {}},
             "extra": {},
+            "flow": {},
         }
         self.__error: str | None = None
 
