@@ -2,3 +2,7 @@
 .env.local
 venv
 SP LINK
+*.db
+*.db-wal
+*.db-shm
+data/
