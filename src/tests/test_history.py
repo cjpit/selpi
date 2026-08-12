@@ -76,7 +76,7 @@ class TestSchema:
         conn = sqlite3.connect(store._db_path)
         row = conn.execute("SELECT version FROM schema_version LIMIT 1").fetchone()
         conn.close()
-        assert row[0] == 1
+        assert row[0] == 2
 
 
 # ------------------------------------------------------------------

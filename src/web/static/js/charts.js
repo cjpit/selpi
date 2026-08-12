@@ -102,8 +102,10 @@ async function fetchHistory(variable, range) {
 // ---------------------------------------------------------------------------
 
 function parseTs(ts) {
-    // Parse "YYYY-MM-DDTHH:MM:SS" as local time → unix epoch seconds
-    return new Date(ts.replace("T", " ") + " UTC").getTime() / 1000;
+    // Timestamps from the API are UTC with "Z" suffix (e.g. "2026-08-12T14:00:00Z").
+    // new Date() parses "Z" as UTC. uPlot's fmtDate uses getHours() (browser local),
+    // so timestamps are displayed in the user's timezone automatically.
+    return new Date(ts).getTime() / 1000;
 }
 
 function buildSeriesOpts(metricNames) {

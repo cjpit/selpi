@@ -57,7 +57,7 @@ TRACKED_METRICS: set[str] = {
     "FloatHours",
 }
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 SCHEMA_SQL = """
 CREATE TABLE IF NOT EXISTS schema_version (
@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS schema_version (
 
 CREATE TABLE IF NOT EXISTS readings (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    ts TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%S', 'now', 'localtime')),
+    ts TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
     name TEXT NOT NULL,
     value REAL,
     units TEXT
@@ -218,7 +218,7 @@ class HistoryStore:
             if table == "readings":
                 rows = conn.execute(
                     "SELECT ts, value FROM readings "
-                    "WHERE name = ? AND ts >= datetime('now', ?, 'localtime') "
+                    "WHERE name = ? AND ts >= strftime('%Y-%m-%dT%H:%M:%SZ', 'now', ?) "
                     "ORDER BY ts ASC",
                     (variable_name, interval),
                 ).fetchall()
@@ -226,7 +226,7 @@ class HistoryStore:
             else:
                 rows = conn.execute(
                     f"SELECT ts, avg_value, min_value, max_value, samples FROM {table} "
-                    "WHERE name = ? AND ts >= datetime('now', ?, 'localtime') "
+                    "WHERE name = ? AND ts >= strftime('%Y-%m-%dT%H:%M:%SZ', 'now', ?) "
                     "ORDER BY ts ASC",
                     (variable_name, interval),
                 ).fetchall()
@@ -265,14 +265,14 @@ class HistoryStore:
             conn.execute(
                 "INSERT INTO readings_hourly (ts, name, avg_value, min_value, max_value, samples) "
                 "SELECT "
-                "    strftime('%Y-%m-%dT%H:00:00', ts) AS hour, "
+                "    strftime('%Y-%m-%dT%H:00:00Z', ts) AS hour, "
                 "    name, "
                 "    AVG(value), "
                 "    MIN(value), "
                 "    MAX(value), "
                 "    COUNT(*) "
                 "FROM readings "
-                "WHERE ts < datetime('now', '-1 hour', 'localtime') "
+                "WHERE ts < strftime('%Y-%m-%dT%H:%M:%SZ', 'now', '-1 hour') "
                 "GROUP BY hour, name "
                 "HAVING COUNT(*) > 0"
             )
@@ -288,14 +288,14 @@ class HistoryStore:
             conn.execute(
                 "INSERT INTO readings_daily (ts, name, avg_value, min_value, max_value, samples) "
                 "SELECT "
-                "    strftime('%Y-%m-%dT00:00:00', ts) AS day, "
+                "    strftime('%Y-%m-%dT00:00:00Z', ts) AS day, "
                 "    name, "
                 "    AVG(avg_value), "
                 "    MIN(min_value), "
                 "    MAX(max_value), "
                 "    SUM(samples) "
                 "FROM readings_hourly "
-                "WHERE ts < datetime('now', '-1 day', 'localtime') "
+                "WHERE ts < strftime('%Y-%m-%dT%H:%M:%SZ', 'now', '-1 day') "
                 "GROUP BY day, name "
                 "HAVING COUNT(*) > 0"
             )
@@ -312,11 +312,11 @@ class HistoryStore:
         conn = self._connect()
         try:
             c1 = conn.execute(
-                "DELETE FROM readings WHERE ts < datetime('now', ? || ' days', 'localtime')",
+                "DELETE FROM readings WHERE ts < strftime('%Y-%m-%dT%H:%M:%SZ', 'now', ? || ' days')",
                 (f"-{raw_days}",),
             ).rowcount
             c2 = conn.execute(
-                "DELETE FROM readings_hourly WHERE ts < datetime('now', ? || ' days', 'localtime')",
+                "DELETE FROM readings_hourly WHERE ts < strftime('%Y-%m-%dT%H:%M:%SZ', 'now', ? || ' days')",
                 (f"-{hourly_days}",),
             ).rowcount
             conn.commit()
