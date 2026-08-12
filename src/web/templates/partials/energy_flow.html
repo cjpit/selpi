@@ -96,32 +96,32 @@
 
     <!-- Battery ↔ Hub dots -->
     {% if f.battery_discharging %}
-      <!-- Discharging: Hub → Battery (downward) -->
+      <!-- Discharging: Battery → Hub (upward, power leaving battery) -->
       <circle r="4" fill="var(--flow-battery-out)" opacity="0.9">
         <animateMotion dur="{{ f.battery_speed }}" repeatCount="indefinite"
-                       path="M210 245 C210 270, 210 290, 210 305"/>
+                       path="M210 305 C210 290, 210 270, 210 245"/>
       </circle>
       <circle r="4" fill="var(--flow-battery-out)" opacity="0.6">
         <animateMotion dur="{{ f.battery_speed }}" begin="-0.33s" repeatCount="indefinite"
-                       path="M210 245 C210 270, 210 290, 210 305"/>
+                       path="M210 305 C210 290, 210 270, 210 245"/>
       </circle>
       <circle r="4" fill="var(--flow-battery-out)" opacity="0.35">
         <animateMotion dur="{{ f.battery_speed }}" begin="-0.66s" repeatCount="indefinite"
-                       path="M210 245 C210 270, 210 290, 210 305"/>
+                       path="M210 305 C210 290, 210 270, 210 245"/>
       </circle>
     {% elif f.battery_charging %}
-      <!-- Charging: Battery → Hub (upward) -->
+      <!-- Charging: Hub → Battery (downward, power entering battery) -->
       <circle r="4" fill="var(--flow-battery-in)" opacity="0.9">
         <animateMotion dur="{{ f.battery_speed }}" repeatCount="indefinite"
-                       path="M210 305 C210 290, 210 270, 210 245"/>
+                       path="M210 245 C210 270, 210 290, 210 305"/>
       </circle>
       <circle r="4" fill="var(--flow-battery-in)" opacity="0.6">
         <animateMotion dur="{{ f.battery_speed }}" begin="-0.33s" repeatCount="indefinite"
-                       path="M210 305 C210 290, 210 270, 210 245"/>
+                       path="M210 245 C210 270, 210 290, 210 305"/>
       </circle>
       <circle r="4" fill="var(--flow-battery-in)" opacity="0.35">
         <animateMotion dur="{{ f.battery_speed }}" begin="-0.66s" repeatCount="indefinite"
-                       path="M210 305 C210 290, 210 270, 210 245"/>
+                       path="M210 245 C210 270, 210 290, 210 305"/>
       </circle>
     {% endif %}
 
