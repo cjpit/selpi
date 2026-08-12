@@ -264,60 +264,24 @@ function stopRefresh() {
     }
 }
 
-// Called when the Charts tab becomes visible
-function onChartsTabActive() {
-    renderAllCharts();
-    startRefresh();
-}
-
-function onChartsTabInactive() {
-    stopRefresh();
-}
-
 // ---------------------------------------------------------------------------
 // Initialisation
 // ---------------------------------------------------------------------------
 
 function initCharts() {
+    // Only initialise on the charts page (check for chart containers)
+    const chartAreas = document.querySelectorAll(".chart-area");
+    if (chartAreas.length === 0) return;
+
     // Range buttons
     document.querySelectorAll(".chart-range-btn").forEach(btn => {
         btn.addEventListener("click", () => setRange(btn.dataset.range));
     });
 
-    // Observe tab changes via MutationObserver on the charts panel
-    const panel = document.getElementById("tab-charts");
-    if (panel) {
-        const observer = new MutationObserver(mutations => {
-            for (const m of mutations) {
-                if (m.attributeName === "style") {
-                    const visible = panel.style.display !== "none" &&
-                                   !panel.hasAttribute("data-show-hidden");
-                    if (visible) {
-                        onChartsTabActive();
-                    } else {
-                        onChartsTabInactive();
-                    }
-                }
-            }
-        });
-        observer.observe(panel, { attributes: true, attributeFilter: ["style"] });
-
-        // Also check initial state
-        const display = getComputedStyle(panel).display;
-        if (display !== "none") {
-            onChartsTabActive();
-        }
-    }
+    // Initial render + auto-refresh
+    renderAllCharts();
+    startRefresh();
 }
-
-// Datastar uses data-show which toggles display. We need a simpler approach:
-// Hook into the Datastar signal for tab changes.
-document.addEventListener("click", (e) => {
-    if (e.target.closest('[data-on:click*="charts"]')) {
-        // Small delay to let Datastar update the visibility
-        setTimeout(onChartsTabActive, 50);
-    }
-});
 
 // Initialise when DOM is ready
 if (document.readyState === "loading") {

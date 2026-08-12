@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="app"{% if tab != 'charts' %} data-init="@get('/sse/{{ tab }}')"{% endif %}>
+  <header class="app-header">
+    <h1>Selectronics Manager</h1>
+    <div id="header-meta" class="header-meta">
+      {% include "partials/header.html" %}
+    </div>
+  </header>
+
+  <div id="alarm-banner">
+    {% include "partials/alarm_banner.html" %}
+  </div>
+
+  {% include "partials/nav.html" %}
+
+  <div id="tab-content">
+    {% include "partials/" + tab + ".html" %}
+  </div>
+</div>
+{% endblock %}

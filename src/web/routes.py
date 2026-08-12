@@ -4,7 +4,7 @@ import asyncio
 import logging
 from typing import Any
 
-from quart import Blueprint, jsonify, render_template, request
+from quart import Blueprint, jsonify, redirect, render_template, request
 
 from datastar_py import consts
 from datastar_py.quart import DatastarResponse, datastar_response
@@ -20,29 +20,77 @@ web_bp = Blueprint("web", __name__)
 view_model = DashboardViewModel()
 history_store = HistoryStore()
 
+# Tab registry: tab_name → has SSE
+TABS: dict[str, bool] = {
+    "overview": True,
+    "battery": True,
+    "solar": True,
+    "load": True,
+    "generator": True,
+    "temperatures": True,
+    "history": True,
+    "charts": False,  # charts uses own /api/history fetch
+    "extra": True,
+    "alarms": True,
+}
+
+
+# ---------------------------------------------------------------------------
+# Page routes
+# ---------------------------------------------------------------------------
 
 @web_bp.route("/")
-async def index() -> str:
+async def index() -> Any:
+    return redirect("/overview")
+
+
+@web_bp.route("/<tab_name>")
+async def tab_page(tab_name: str) -> Any:
+    if tab_name not in TABS:
+        return "Not found", 404
     snapshot = view_model.snapshot
-    return await render_template("dashboard.html", snapshot=snapshot)
+    return await render_template("tab.html", tab=tab_name, snapshot=snapshot)
 
 
-@web_bp.route("/sse")
+# ---------------------------------------------------------------------------
+# Per-tab SSE endpoint
+# ---------------------------------------------------------------------------
+
+@web_bp.route("/sse/<tab_name>")
 @datastar_response
-async def sse() -> Any:
-    """SSE endpoint: renders full dashboard content and pushes as a single morph patch."""
+async def sse_tab(tab_name: str) -> Any:
+    """SSE endpoint: pushes targeted patches for one tab plus shared elements."""
+    if tab_name not in TABS or not TABS[tab_name]:
+        return
+
     while True:
         snapshot = view_model.snapshot
-        content_html = await render_template(
-            "partials/dashboard_content.html", snapshot=snapshot
-        )
+
+        # Shared elements: header and alarm banner
         yield ServerSentEventGenerator.patch_elements(
-            content_html,
-            selector="#content",
+            await render_template("partials/header.html", snapshot=snapshot),
+            selector="#header-meta",
             mode=consts.ElementPatchMode.INNER,
         )
+        yield ServerSentEventGenerator.patch_elements(
+            await render_template("partials/alarm_banner.html", snapshot=snapshot),
+            selector="#alarm-banner",
+            mode=consts.ElementPatchMode.INNER,
+        )
+
+        # Tab content
+        yield ServerSentEventGenerator.patch_elements(
+            await render_template(f"partials/{tab_name}.html", snapshot=snapshot),
+            selector="#tab-content",
+            mode=consts.ElementPatchMode.INNER,
+        )
+
         await asyncio.sleep(refresh_seconds())
 
+
+# ---------------------------------------------------------------------------
+# API routes
+# ---------------------------------------------------------------------------
 
 @web_bp.route("/api/stats")
 async def api_stats() -> Any:
@@ -76,6 +124,10 @@ async def api_history_variables() -> Any:
         "variables": sorted(TRACKED_METRICS),
     })
 
+
+# ---------------------------------------------------------------------------
+# Generator control
+# ---------------------------------------------------------------------------
 
 def _generator_status_morph(message: str, error: bool = False) -> DatastarResponse:
     """Build a Datastar morph patch updating the generator control status element."""
@@ -122,7 +174,7 @@ async def generator_stop() -> Any:
         muster = Muster()
         muster.write("GeneratorBtnPressPort1", 2)
         logger.info("Generator stop requested")
-        return _generator_status_morph("Generator stop command sent")
+        return _generator_status_morph("Generator start command sent")
     except Exception as exc:
         logger.exception("Generator stop failed")
         return _generator_status_morph(str(exc), error=True)

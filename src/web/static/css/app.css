@@ -127,6 +127,8 @@ html, body {
   border-bottom: 2px solid transparent;
   white-space: nowrap;
   transition: color 0.15s, border-color 0.15s;
+  text-decoration: none;
+  display: inline-block;
 }
 
 .tab-btn:hover {
