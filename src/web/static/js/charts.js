@@ -116,6 +116,38 @@ function buildSeriesOpts(metricNames) {
     }));
 }
 
+function interpolateNulls(vals) {
+    // Linear interpolation for NaN values in a Float64Array.
+    // Finds the nearest non-NaN neighbors and fills gaps.
+    // Leading/trailing NaN values are left as NaN (uPlot will not draw them).
+    const len = vals.length;
+    let prevIdx = -1;
+
+    // First pass: find all NaN positions and their nearest non-NaN neighbors
+    for (let i = 0; i < len; i++) {
+        if (!isNaN(vals[i])) {
+            prevIdx = i;
+            continue;
+        }
+        // Find next non-NaN
+        let nextIdx = -1;
+        for (let j = i + 1; j < len; j++) {
+            if (!isNaN(vals[j])) {
+                nextIdx = j;
+                break;
+            }
+        }
+        if (prevIdx >= 0 && nextIdx >= 0) {
+            const prevVal = vals[prevIdx];
+            const nextVal = vals[nextIdx];
+            const span = nextIdx - prevIdx;
+            const offset = i - prevIdx;
+            vals[i] = prevVal + (nextVal - prevVal) * (offset / span);
+        }
+        // If no prev or next neighbor, leave as NaN
+    }
+}
+
 function renderChart(container, metricNames, datasets, range) {
     // datasets: [{ts, value}...] per metric
     // Merge all timestamps into a sorted unique array
@@ -149,8 +181,9 @@ function renderChart(container, metricNames, datasets, range) {
         const lookup = lookups[mi];
         for (let ti = 0; ti < timestamps.length; ti++) {
             const v = lookup[timestamps[ti]];
-            vals[ti] = v !== undefined ? v : null;
+            vals[ti] = v !== undefined ? v : NaN;
         }
+        interpolateNulls(vals);
         data.push(vals);
     }
 
