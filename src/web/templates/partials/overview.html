@@ -8,29 +8,3 @@
 {% endif %}
 
 {% include "partials/energy_flow.html" %}
-
-<div class="grid">
-  <div class="card">
-    <div class="card-title">State of Charge</div>
-    <div class="card-value color-{{ snapshot.overview.soc_color }}">{{ snapshot.overview.soc }}%</div>
-    <div class="progress-bar">
-      <div class="progress-bar-fill color-{{ snapshot.overview.soc_color }}" style="width: {{ snapshot.overview.soc }}%"></div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-title">Hours Remaining</div>
-    <div class="card-value color-{{ snapshot.overview.hours_color }}">{{ snapshot.overview.hours_remaining }} h</div>
-    <div class="progress-bar">
-      <div class="progress-bar-fill color-{{ snapshot.overview.hours_color }}" style="width: {{ snapshot.overview.hours_pct }}%"></div>
-    </div>
-  </div>
-  
-  <div class="card">
-    <div class="card-title">Charge State</div>
-    <div class="card-value">{{ snapshot.overview.battery_state }}</div>
-  </div>
-  <div class="card">
-    <div class="card-title">Inverter Frequency</div>
-    <div class="card-value">{{ snapshot.overview.inv_freq_hz }} Hz</div>
-  </div>
-</div>
