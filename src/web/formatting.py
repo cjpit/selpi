@@ -460,9 +460,8 @@ def _build_flow(stats_by_name: dict[str, Any]) -> dict[str, Any]:
     gen_power = stat_value(stats_by_name, "ACGeneratorPower")
 
     # ABB string inverter (AC-coupled solar)
-    abb_max_w = 6000
     abb_power_w = solar_w
-    abb_percent = min((abb_power_w / abb_max_w * 100) if abb_max_w else 0.0, 100.0)
+    abb_percent = stat_value(stats_by_name, "PercentageSolarOutput")
 
     # Battery enrichment for the battery node
     batt_soc = stat_value(stats_by_name, "BattSocPercent")
@@ -490,8 +489,7 @@ def _build_flow(stats_by_name: dict[str, Any]) -> dict[str, Any]:
         "generator_speed": _flow_speed(gen_power),
         # ABB inverter enrichment
         "abb_power_w": int(round(abb_power_w)),
-        "abb_percent": round(abb_percent, 1),
-        "abb_max_w": abb_max_w,
+        "abb_percent": int(round(abb_percent)),
         "abb_active": abb_power_w > 5,
         # Battery enrichment for the battery node
         "soc_pct": round(soc_pct, 1),
