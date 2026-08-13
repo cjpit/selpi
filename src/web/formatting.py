@@ -443,11 +443,24 @@ def _kv_kwh(stat: float, decimals: int = 2) -> float:
     return round(stat / 1000.0, decimals)
 
 
-def _flow_speed(watts: float) -> str:
-    """Return SVG animateMotion duration string based on power magnitude."""
-    if watts < 500:
+# System capacity constants for parametric speed tiers
+_MAX_SOLAR_W = 6000   # ABB string inverter max
+_MAX_SP_PRO_W = 5000  # Selectronic SP PRO max
+_MAX_SYSTEM_W = 11000 # Total system capacity (solar + SP PRO)
+
+
+def _flow_speed(watts: float, max_watts: float) -> str:
+    """Return CSS animation duration based on % of max rated power.
+
+    Returns empty string for inactive connections (≤10W) so templates
+    can skip rendering dots entirely.
+    """
+    if watts < 10:
+        return ""
+    ratio = watts / max_watts
+    if ratio < 0.33:
         return "3s"
-    if watts < 2000:
+    if ratio < 0.66:
         return "1.5s"
     return "0.8s"
 
@@ -463,6 +476,10 @@ def _build_flow(stats_by_name: dict[str, Any]) -> dict[str, Any]:
     abb_power_w = solar_w
     abb_percent = stat_value(stats_by_name, "PercentageSolarOutput")
 
+    # Dynamic available max: 11kW when solar active, 5kW when not
+    solar_active = solar_w > 10
+    available_max = _MAX_SYSTEM_W if solar_active else _MAX_SP_PRO_W
+
     # Battery enrichment for the battery node
     batt_soc = stat_value(stats_by_name, "BattSocPercent")
     battery_size = battery_size_wh()
@@ -474,23 +491,23 @@ def _build_flow(stats_by_name: dict[str, Any]) -> dict[str, Any]:
 
     return {
         "solar_w": int(round(solar_w)),
-        "solar_active": solar_w > 5,
-        "solar_speed": _flow_speed(solar_w),
+        "solar_active": solar_active,
+        "solar_speed": _flow_speed(solar_w, _MAX_SOLAR_W),
         "load_w": int(round(load_w)),
-        "load_active": load_w > 5,
-        "load_speed": _flow_speed(load_w),
+        "load_active": load_w > 10,
+        "load_speed": _flow_speed(load_w, available_max),
         "battery_w": int(round(battery_w)),
-        "battery_charging": battery_w < -5,
-        "battery_discharging": battery_w > 5,
-        "battery_active": abs(battery_w) > 5,
-        "battery_speed": _flow_speed(abs(battery_w)),
+        "battery_charging": battery_w < -10,
+        "battery_discharging": battery_w > 10,
+        "battery_active": abs(battery_w) > 10,
+        "battery_speed": _flow_speed(abs(battery_w), _MAX_SP_PRO_W),
         "generator_w": int(round(gen_power)),
-        "generator_active": gen_power > 5,
-        "generator_speed": _flow_speed(gen_power),
+        "generator_active": gen_power > 10,
+        "generator_speed": _flow_speed(gen_power, _MAX_SP_PRO_W),
         # ABB inverter enrichment
         "abb_power_w": int(round(abb_power_w)),
         "abb_percent": int(round(abb_percent)),
-        "abb_active": abb_power_w > 5,
+        "abb_active": abb_power_w > 10,
         # Battery enrichment for the battery node
         "soc_pct": round(soc_pct, 1),
         "soc_color": soc_color(soc_pct),

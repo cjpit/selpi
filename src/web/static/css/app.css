@@ -412,73 +412,375 @@ html, body {
 }
 
 /* ============================================================
-   Energy Flow Diagram (Victron VRM style)
+   Energy Flow Diagram — CSS Flexbox/Grid Layout
    ============================================================ */
 
-.energy-flow-container {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1.5rem;
-  width: 100%;
-}
-
+/* Container — vertical flex column, centered */
 .energy-flow {
-  width: 100%;
-  max-width: 100%;
-  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  max-width: 600px;
+  margin: 0 auto 1.5rem;
+  padding: 0 0.5rem;
 }
 
-/* On very small screens, cap the diagram so it doesn't get too tiny */
-@media (max-width: 480px) {
-  .energy-flow {
-    min-width: 360px;
-  }
+/* ── Node Cards ── */
+
+.ef-node {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 1rem;
+  padding: 1rem 1.5rem;
+  text-align: center;
+  min-width: 180px;
+  max-width: 260px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s ease, opacity 0.3s ease;
 }
 
-/* Connection lines */
-.flow-line {
-  transition: stroke 0.3s ease;
+.ef-node.ef-active {
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.04));
 }
 
-.flow-line.inactive {
-  stroke: var(--flow-inactive);
-  stroke-dasharray: 4 6;
-  opacity: 0.4;
-}
-
-.flow-line.active {
-  stroke-width: 3;
-}
-
-/* Node cards */
-.flow-node rect {
-  transition: stroke 0.3s ease;
-}
-
-.flow-node.active rect {
-  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.06));
-}
-
-.flow-node.inactive {
+.ef-node.ef-inactive {
   opacity: 0.5;
 }
 
-.flow-node text {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+.ef-node.ef-active.ef-solar,
+.ef-node.ef-active.ef-abb { border-color: var(--flow-solar); }
+.ef-node.ef-active.ef-generator { border-color: var(--flow-generator); }
+.ef-node.ef-active.ef-house { border-color: var(--flow-house); }
+
+.ef-icon {
+  display: block;
+  margin: 0 auto 0.25rem;
 }
 
-/* Hub */
-.flow-hub {
-  filter: drop-shadow(0 0 8px rgba(88, 166, 255, 0.15));
+.ef-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
 }
 
-.flow-hub text {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+.ef-sublabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-/* Flow dots — these use SVG animateMotion, no CSS animation needed.
-   The transition ensures dots appear/disappear smoothly. */
-.energy-flow circle {
-  transition: opacity 0.3s ease;
+.ef-node-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.ef-logo {
+  display: inline-block;
+}
+
+.ef-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.ef-unit {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.ef-percent {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 0.25rem;
+}
+
+.ef-meta {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 0.25rem;
+}
+
+/* ABB progress bar */
+.ef-progress-bar {
+  width: 100%;
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 0.4rem;
+}
+
+.ef-progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+/* ── SP PRO Hub ── */
+
+.ef-hub {
+  background: var(--surface);
+  border: 2px solid var(--accent);
+  border-radius: 1rem;
+  padding: 0.75rem 1rem;
+  text-align: center;
+  min-width: 160px;
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 0 8px rgba(88, 166, 255, 0.12));
+}
+
+.ef-logo-selectronic {
+  display: block;
+  margin: 0 auto 0.35rem;
+}
+
+.ef-hub-label {
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-weight: 500;
+  margin-top: 0.15rem;
+}
+
+.ef-freq {
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-top: 0.15rem;
+}
+
+/* ── Battery Node ── */
+
+.ef-battery {
+  min-width: 200px;
+}
+
+.ef-battery-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  border-radius: 0.85rem;
+  opacity: 0.2;
+  transition: width 0.5s ease;
+  z-index: 0;
+}
+
+.ef-bolt {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.75rem;
+  z-index: 1;
+}
+
+.ef-soc {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+  position: relative;
+  z-index: 1;
+}
+
+.ef-charge-state {
+  font-size: 1.1rem;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Connectors — Vertical ── */
+
+.ef-connector.ef-vertical {
+  width: 3px;
+  height: 2rem;
+  position: relative;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+.ef-connector.ef-vertical.ef-active {
+  background: var(--ef-color);
+}
+
+.ef-connector.ef-vertical.ef-inactive {
+  background: var(--border);
+  opacity: 0.4;
+}
+
+/* ── Animated Dots — Vertical ── */
+
+.ef-connector.ef-vertical .ef-dot {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--ef-color, var(--success));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+.ef-connector.ef-vertical.ef-down .ef-dot {
+  animation: ef-flow-down var(--ef-speed, 2s) linear infinite;
+}
+
+.ef-connector.ef-vertical.ef-up .ef-dot {
+  animation: ef-flow-up var(--ef-speed, 2s) linear infinite;
+}
+
+.ef-connector.ef-vertical .ef-dot:nth-child(2) {
+  animation-delay: calc(var(--ef-speed, 2s) * -0.33);
+  opacity: 0.7;
+}
+
+.ef-connector.ef-vertical .ef-dot:nth-child(3) {
+  animation-delay: calc(var(--ef-speed, 2s) * -0.66);
+  opacity: 0.4;
+}
+
+@keyframes ef-flow-down {
+  from { top: -5px; }
+  to { top: calc(100% + 5px); }
+}
+
+@keyframes ef-flow-up {
+  from { bottom: -5px; }
+  to { bottom: calc(100% + 5px); }
+}
+
+/* ── Bus Row ── */
+
+.ef-bus {
+  display: grid;
+  grid-template-columns: auto 1fr auto 1fr auto;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+  max-width: 560px;
+  position: relative;
+  padding: 0.5rem 0;
+}
+
+/* Horizontal bus bar line */
+.ef-bus::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--border);
+  z-index: 0;
+}
+
+/* Bus nodes sit above the line */
+.ef-bus > .ef-node,
+.ef-bus > .ef-hub {
+  z-index: 1;
+}
+
+/* ── Connectors — Horizontal (bus) ── */
+
+.ef-connector.ef-horizontal {
+  position: relative;
+  height: 3px;
+  z-index: 0;
+}
+
+.ef-hdots {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  height: 0;
+}
+
+.ef-hdots .ef-dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ef-color, var(--success));
+  top: 50%;
+  transform: translateY(-50%);
+  animation: ef-flow-right var(--ef-speed, 2s) linear infinite;
+}
+
+.ef-hdots .ef-dot:nth-child(2) {
+  animation-delay: calc(var(--ef-speed, 2s) * -0.33);
+  opacity: 0.7;
+}
+
+.ef-hdots .ef-dot:nth-child(3) {
+  animation-delay: calc(var(--ef-speed, 2s) * -0.66);
+  opacity: 0.4;
+}
+
+@keyframes ef-flow-right {
+  from { left: -8px; }
+  to { left: calc(100% + 8px); }
+}
+
+/* ── Responsive — Mobile ── */
+
+@media (max-width: 640px) {
+  .energy-flow {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .ef-node {
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+  }
+
+  .ef-value {
+    font-size: 1.5rem;
+  }
+
+  .ef-soc {
+    font-size: 2rem;
+  }
+
+  /* Bus row collapses to single column */
+  .ef-bus {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto auto auto;
+    max-width: 100%;
+    gap: 0;
+  }
+
+  /* Hide bus bar line on mobile */
+  .ef-bus::before {
+    display: none;
+  }
+
+  /* Horizontal connectors become vertical on mobile */
+  .ef-connector.ef-horizontal {
+    width: 3px;
+    height: 2rem;
+    margin: 0 auto;
+  }
+
+  .ef-hdots .ef-dot {
+    left: 50%;
+    top: auto;
+    transform: translateX(-50%);
+    animation-name: ef-flow-down;
+  }
 }
 
