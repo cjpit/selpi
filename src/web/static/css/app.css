@@ -419,12 +419,20 @@ html, body {
   display: flex;
   justify-content: center;
   margin-bottom: 1.5rem;
+  width: 100%;
 }
 
 .energy-flow {
   width: 100%;
-  max-width: 500px;
+  max-width: 100%;
   height: auto;
+}
+
+/* On very small screens, cap the diagram so it doesn't get too tiny */
+@media (max-width: 480px) {
+  .energy-flow {
+    min-width: 360px;
+  }
 }
 
 /* Connection lines */

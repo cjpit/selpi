@@ -459,6 +459,20 @@ def _build_flow(stats_by_name: dict[str, Any]) -> dict[str, Any]:
     battery_w = stat_value(stats_by_name, "DCBatteryPower")
     gen_power = stat_value(stats_by_name, "ACGeneratorPower")
 
+    # ABB string inverter (AC-coupled solar)
+    abb_max_w = 6000
+    abb_power_w = solar_w
+    abb_percent = min((abb_power_w / abb_max_w * 100) if abb_max_w else 0.0, 100.0)
+
+    # Battery enrichment for the battery node
+    batt_soc = stat_value(stats_by_name, "BattSocPercent")
+    battery_size = battery_size_wh()
+    shutdown = shutdown_percent()
+    total_kwh_avail = battery_size * ((100 - shutdown) / 100)
+    primary_kwh_avail = total_kwh_avail * (batt_soc / 100)
+    soc_pct = (primary_kwh_avail / total_kwh_avail * 100) if total_kwh_avail else 0.0
+    hours = hours_remaining(battery_size, batt_soc, battery_w)
+
     return {
         "solar_w": int(round(solar_w)),
         "solar_active": solar_w > 5,
@@ -474,6 +488,17 @@ def _build_flow(stats_by_name: dict[str, Any]) -> dict[str, Any]:
         "generator_w": int(round(gen_power)),
         "generator_active": gen_power > 5,
         "generator_speed": _flow_speed(gen_power),
+        # ABB inverter enrichment
+        "abb_power_w": int(round(abb_power_w)),
+        "abb_percent": round(abb_percent, 1),
+        "abb_max_w": abb_max_w,
+        "abb_active": abb_power_w > 5,
+        # Battery enrichment for the battery node
+        "soc_pct": round(soc_pct, 1),
+        "soc_color": soc_color(soc_pct),
+        "hours_remaining": round(hours, 1),
+        "charge_state": charge_state(stats_by_name),
+        "inv_freq_hz": round(stat_value(stats_by_name, "InvFreq"), 2),
     }
 
 
@@ -779,7 +804,7 @@ def build_view_model(raw_stats: list[dict[str, Any]]) -> dict[str, Any]:
             "net_today_kwh": round(stat_value(stats_by_name, "BattNetToday") / 1000, 2),
             "in_yesterday_kwh": round(stat_value(stats_by_name, "BattInYesterday") / 1000, 2),
             "out_yesterday_kwh": round(stat_value(stats_by_name, "BattOutYesterday") / 1000, 2),
-            "float_hours": int(round(stat_value(stats_by_name, "FloatHours"))),
+            "float_hours": round(stat_value(stats_by_name, "FloatHours") / 60, 1),
         },
         "solar": {
             "power_w": int(round(stat_value(stats_by_name, "CombinedKacoAcPowerHiRes"))),
