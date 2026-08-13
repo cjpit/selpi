@@ -346,7 +346,7 @@ def _env_int(name: str, default: int) -> int:
 
 
 def battery_size_wh() -> int:
-    return _env_int("SELPI_BATTERY_SIZE_WH", 17000)
+    return _env_int("SELPI_BATTERY_SIZE_WH", 20000)
 
 
 def shutdown_percent() -> int:
