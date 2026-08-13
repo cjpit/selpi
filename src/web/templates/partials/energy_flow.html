@@ -39,13 +39,11 @@
       </clipPath>
     </defs>
 
-    <!-- ===== AC BUS BAR (horizontal structural line) ===== -->
-    <line x1="200" y1="280" x2="800" y2="280"
+    <!-- ===== AC BUS BAR (horizontal structural line, Generator to House) ===== -->
+    <line x1="100" y1="280" x2="700" y2="280"
           stroke="var(--border)" stroke-width="3" stroke-linecap="round"/>
-    <!-- Bus junction dots — SP PRO junction, ABB junction, House junction -->
-    <circle cx="300" cy="280" r="5" fill="var(--surface)" stroke="var(--border)" stroke-width="1.5"/>
+    <!-- Bus junction dot at center (SP PRO connection) -->
     <circle cx="450" cy="280" r="5" fill="var(--surface)" stroke="var(--border)" stroke-width="1.5"/>
-    <circle cx="700" cy="280" r="5" fill="var(--surface)" stroke="var(--border)" stroke-width="1.5"/>
 
 
     <!-- ===== CONNECTION PATHS (background lines) ===== -->
@@ -62,40 +60,28 @@
           d="M450 175 C450 205, 450 245, 450 280"
           fill="none" stroke-width="3" stroke-linecap="round"/>
 
-    <!-- AC Bus → SP PRO (vertical, down at x=300) -->
+    <!-- AC Bus → SP PRO (vertical, down at x=450) -->
     <path class="flow-line {% if f.battery_active %}active{% else %}inactive{% endif %}"
           style="{% if f.battery_active %}stroke: {% if f.battery_charging %}var(--flow-battery-in){% else %}var(--flow-battery-out){% endif %};{% endif %}"
-          d="M300 280 C300 305, 300 332, 300 360"
+          d="M450 280 C450 305, 450 332, 450 350"
           fill="none" stroke-width="3" stroke-linecap="round"/>
 
-    <!-- AC Bus → House (vertical, down at x=700) -->
-    <path class="flow-line {% if f.load_active %}active{% else %}inactive{% endif %}"
-          style="{% if f.load_active %}stroke: var(--flow-house);{% endif %}"
-          d="M700 280 C700 305, 700 332, 700 360"
-          fill="none" stroke-width="3" stroke-linecap="round"/>
-
-    <!-- SP PRO → Battery (rightward then down to battery) -->
+    <!-- SP PRO → Battery (straight down at x=450) -->
     <path class="flow-line {% if f.battery_active %}active{% else %}inactive{% endif %}"
           style="{% if f.battery_active %}stroke: {% if f.battery_charging %}var(--flow-battery-in){% else %}var(--flow-battery-out){% endif %};{% endif %}"
-          d="M340 420 C380 420, 400 445, 450 485"
-          fill="none" stroke-width="3" stroke-linecap="round"/>
-
-    <!-- Generator → SP PRO (horizontal) -->
-    <path class="flow-line {% if f.generator_active %}active{% else %}inactive{% endif %}"
-          style="{% if f.generator_active %}stroke: var(--flow-generator);{% endif %}"
-          d="M160 390 C200 390, 250 390, 270 390"
+          d="M450 410 C450 435, 450 460, 450 485"
           fill="none" stroke-width="3" stroke-linecap="round"/>
 
 
     <!-- ===== INVERTER FREQUENCY (above Bus → House line) ===== -->
-    <text x="715" y="272" fill="var(--muted)" font-size="10" font-weight="400">
+    <text x="580" y="272" fill="var(--muted)" font-size="10" font-weight="400">
       {{ f.inv_freq_hz }} Hz
     </text>
 
 
     <!-- ===== HORIZONTAL BUS FLOW DOTS ===== -->
 
-    <!-- Solar → House on bus (rightward from ABB junction) -->
+    <!-- Solar → House on bus (rightward from center junction) -->
     {% if f.solar_active and f.load_active %}
     <circle r="4" fill="var(--flow-solar)" opacity="0.9">
       <animateMotion dur="{{ f.solar_speed }}" repeatCount="indefinite"
@@ -111,35 +97,35 @@
     </circle>
     {% endif %}
 
-    <!-- Solar → SP PRO on bus (leftward from ABB junction to SP PRO, for charging) -->
-    {% if f.solar_active and f.battery_charging %}
-    <circle r="4" fill="var(--flow-battery-in)" opacity="0.9">
-      <animateMotion dur="{{ f.battery_speed }}" repeatCount="indefinite"
-                     path="M450 280 C412 280, 338 280, 300 280"/>
-    </circle>
-    <circle r="4" fill="var(--flow-battery-in)" opacity="0.6">
-      <animateMotion dur="{{ f.battery_speed }}" begin="-0.33s" repeatCount="indefinite"
-                     path="M450 280 C412 280, 338 280, 300 280"/>
-    </circle>
-    <circle r="4" fill="var(--flow-battery-in)" opacity="0.35">
-      <animateMotion dur="{{ f.battery_speed }}" begin="-0.66s" repeatCount="indefinite"
-                     path="M450 280 C412 280, 338 280, 300 280"/>
-    </circle>
-    {% endif %}
-
-    <!-- SP PRO → House on bus (rightward from SP PRO junction, for discharging) -->
-    {% if f.battery_discharging %}
+    <!-- Battery → House on bus (rightward from center junction, for discharging) -->
+    {% if f.battery_discharging and f.load_active %}
     <circle r="4" fill="var(--flow-battery-out)" opacity="0.9">
       <animateMotion dur="{{ f.battery_speed }}" repeatCount="indefinite"
-                     path="M300 280 C400 280, 550 280, 700 280"/>
+                     path="M450 280 C525 280, 625 280, 700 280"/>
     </circle>
     <circle r="4" fill="var(--flow-battery-out)" opacity="0.6">
       <animateMotion dur="{{ f.battery_speed }}" begin="-0.33s" repeatCount="indefinite"
-                     path="M300 280 C400 280, 550 280, 700 280"/>
+                     path="M450 280 C525 280, 625 280, 700 280"/>
     </circle>
     <circle r="4" fill="var(--flow-battery-out)" opacity="0.35">
       <animateMotion dur="{{ f.battery_speed }}" begin="-0.66s" repeatCount="indefinite"
-                     path="M300 280 C400 280, 550 280, 700 280"/>
+                     path="M450 280 C525 280, 625 280, 700 280"/>
+    </circle>
+    {% endif %}
+
+    <!-- Generator → SP PRO on bus (rightward from generator to center) -->
+    {% if f.generator_active %}
+    <circle r="4" fill="var(--flow-generator)" opacity="0.9">
+      <animateMotion dur="{{ f.generator_speed }}" repeatCount="indefinite"
+                     path="M100 280 C200 280, 350 280, 450 280"/>
+    </circle>
+    <circle r="4" fill="var(--flow-generator)" opacity="0.6">
+      <animateMotion dur="{{ f.generator_speed }}" begin="-0.33s" repeatCount="indefinite"
+                     path="M100 280 C200 280, 350 280, 450 280"/>
+    </circle>
+    <circle r="4" fill="var(--flow-generator)" opacity="0.35">
+      <animateMotion dur="{{ f.generator_speed }}" begin="-0.66s" repeatCount="indefinite"
+                     path="M100 280 C200 280, 350 280, 450 280"/>
     </circle>
     {% endif %}
 
@@ -182,15 +168,15 @@
     {% if f.battery_charging %}
     <circle r="5" fill="var(--flow-battery-in)" opacity="0.9">
       <animateMotion dur="{{ f.battery_speed }}" repeatCount="indefinite"
-                     path="M300 280 C300 305, 300 332, 300 360"/>
+                     path="M450 280 C450 305, 450 332, 450 350"/>
     </circle>
     <circle r="5" fill="var(--flow-battery-in)" opacity="0.6">
       <animateMotion dur="{{ f.battery_speed }}" begin="-0.33s" repeatCount="indefinite"
-                     path="M300 280 C300 305, 300 332, 300 360"/>
+                     path="M450 280 C450 305, 450 332, 450 350"/>
     </circle>
     <circle r="5" fill="var(--flow-battery-in)" opacity="0.35">
       <animateMotion dur="{{ f.battery_speed }}" begin="-0.66s" repeatCount="indefinite"
-                     path="M300 280 C300 305, 300 332, 300 360"/>
+                     path="M450 280 C450 305, 450 332, 450 350"/>
     </circle>
     {% endif %}
 
@@ -198,79 +184,47 @@
     {% if f.battery_discharging %}
     <circle r="5" fill="var(--flow-battery-out)" opacity="0.9">
       <animateMotion dur="{{ f.battery_speed }}" repeatCount="indefinite"
-                     path="M300 360 C300 332, 300 305, 300 280"/>
+                     path="M450 350 C450 332, 450 305, 450 280"/>
     </circle>
     <circle r="5" fill="var(--flow-battery-out)" opacity="0.6">
       <animateMotion dur="{{ f.battery_speed }}" begin="-0.33s" repeatCount="indefinite"
-                     path="M300 360 C300 332, 300 305, 300 280"/>
+                     path="M450 350 C450 332, 450 305, 450 280"/>
     </circle>
     <circle r="5" fill="var(--flow-battery-out)" opacity="0.35">
       <animateMotion dur="{{ f.battery_speed }}" begin="-0.66s" repeatCount="indefinite"
-                     path="M300 360 C300 332, 300 305, 300 280"/>
+                     path="M450 350 C450 332, 450 305, 450 280"/>
     </circle>
     {% endif %}
 
-    <!-- SP PRO → Battery dots (charging: rightward then down to battery) -->
+    <!-- SP PRO → Battery dots (charging: straight down) -->
     {% if f.battery_charging %}
     <circle r="5" fill="var(--flow-battery-in)" opacity="0.9">
       <animateMotion dur="{{ f.battery_speed }}" repeatCount="indefinite"
-                     path="M340 420 C380 420, 400 445, 450 485"/>
+                     path="M450 410 C450 435, 450 460, 450 485"/>
     </circle>
     <circle r="5" fill="var(--flow-battery-in)" opacity="0.6">
       <animateMotion dur="{{ f.battery_speed }}" begin="-0.33s" repeatCount="indefinite"
-                     path="M340 420 C380 420, 400 445, 450 485"/>
+                     path="M450 410 C450 435, 450 460, 450 485"/>
     </circle>
     <circle r="5" fill="var(--flow-battery-in)" opacity="0.35">
       <animateMotion dur="{{ f.battery_speed }}" begin="-0.66s" repeatCount="indefinite"
-                     path="M340 420 C380 420, 400 445, 450 485"/>
+                     path="M450 410 C450 435, 450 460, 450 485"/>
     </circle>
     {% endif %}
 
-    <!-- Battery → SP PRO dots (discharging: from battery up then left to SP PRO) -->
+    <!-- Battery → SP PRO dots (discharging: straight up) -->
     {% if f.battery_discharging %}
     <circle r="5" fill="var(--flow-battery-out)" opacity="0.9">
       <animateMotion dur="{{ f.battery_speed }}" repeatCount="indefinite"
-                     path="M450 485 C400 445, 400 420, 340 420"/>
+                     path="M450 485 C450 460, 450 435, 450 410"/>
     </circle>
     <circle r="5" fill="var(--flow-battery-out)" opacity="0.6">
       <animateMotion dur="{{ f.battery_speed }}" begin="-0.33s" repeatCount="indefinite"
-                     path="M450 485 C400 445, 400 420, 340 420"/>
+                     path="M450 485 C450 460, 450 435, 450 410"/>
     </circle>
     <circle r="5" fill="var(--flow-battery-out)" opacity="0.35">
       <animateMotion dur="{{ f.battery_speed }}" begin="-0.66s" repeatCount="indefinite"
-                     path="M450 485 C400 445, 400 420, 340 420"/>
-    </circle>
-    {% endif %}
-
-    <!-- Bus → House dots (downward) -->
-    {% if f.load_active %}
-    <circle r="5" fill="var(--flow-house)" opacity="0.9">
-      <animateMotion dur="{{ f.load_speed }}" repeatCount="indefinite"
-                     path="M700 280 C700 305, 700 332, 700 360"/>
-    </circle>
-    <circle r="5" fill="var(--flow-house)" opacity="0.6">
-      <animateMotion dur="{{ f.load_speed }}" begin="-0.33s" repeatCount="indefinite"
-                     path="M700 280 C700 305, 700 332, 700 360"/>
-    </circle>
-    <circle r="5" fill="var(--flow-house)" opacity="0.35">
-      <animateMotion dur="{{ f.load_speed }}" begin="-0.66s" repeatCount="indefinite"
-                     path="M700 280 C700 305, 700 332, 700 360"/>
-    </circle>
-    {% endif %}
-
-    <!-- Generator → SP PRO dots -->
-    {% if f.generator_active %}
-    <circle r="5" fill="var(--flow-generator)" opacity="0.9">
-      <animateMotion dur="{{ f.generator_speed }}" repeatCount="indefinite"
-                     path="M160 390 C200 390, 250 390, 270 390"/>
-    </circle>
-    <circle r="5" fill="var(--flow-generator)" opacity="0.6">
-      <animateMotion dur="{{ f.generator_speed }}" begin="-0.33s" repeatCount="indefinite"
-                     path="M160 390 C200 390, 250 390, 270 390"/>
-    </circle>
-    <circle r="5" fill="var(--flow-generator)" opacity="0.35">
-      <animateMotion dur="{{ f.generator_speed }}" begin="-0.66s" repeatCount="indefinite"
-                     path="M160 390 C200 390, 250 390, 270 390"/>
+                     path="M450 485 C450 460, 450 435, 450 410"/>
     </circle>
     {% endif %}
 
@@ -320,42 +274,42 @@
             fill="{% if f.abb_active %}var(--flow-solar){% else %}var(--flow-inactive){% endif %}"/>
       <!-- Capacity text -->
       <text x="450" y="170" text-anchor="middle" fill="var(--muted)" font-size="9">
-        {{ f.abb_percent }}% of {{ f.abb_max_w // 1000 }} kW
+        {{ f.abb_percent }}%
       </text>
     </g>
 
-    <!-- ===== Generator Node (far left, at same y as SP PRO) ===== -->
+    <!-- ===== Generator Node (left side, centered on bus at y=280) ===== -->
     <g class="flow-node {% if f.generator_active %}active{% else %}inactive{% endif %}" data-source="generator">
-      <rect x="40" y="360" width="120" height="60" rx="10"
+      <rect x="40" y="250" width="120" height="60" rx="10"
             fill="var(--surface)"
             stroke="{% if f.generator_active %}var(--flow-generator){% else %}var(--flow-inactive){% endif %}"
             stroke-width="1.5"/>
       <!-- Icon: Generator -->
-      <g transform="translate(50, 368) scale(0.8)"
+      <g transform="translate(50, 258) scale(0.8)"
          style="color: {% if f.generator_active %}var(--flow-generator){% else %}var(--flow-inactive){% endif %}">
         <use href="#icon-generator"/>
       </g>
-      <text x="88" y="386" fill="{% if f.generator_active %}var(--flow-generator){% else %}var(--flow-inactive){% endif %}"
+      <text x="88" y="276" fill="{% if f.generator_active %}var(--flow-generator){% else %}var(--flow-inactive){% endif %}"
             font-size="11" font-weight="600">Generator</text>
       <!-- Power value -->
-      <text x="100" y="410" fill="var(--text)" font-size="16" font-weight="700" text-anchor="middle">
+      <text x="100" y="300" fill="var(--text)" font-size="16" font-weight="700" text-anchor="middle">
         {{ f.generator_w }}<tspan fill="var(--muted)" font-size="11" font-weight="400"> W</tspan>
       </text>
     </g>
 
-    <!-- ===== SP PRO Hub (positioned at x=300, below bus junction) ===== -->
+    <!-- ===== SP PRO Hub (centered on x=450, between bus and battery) ===== -->
     <g class="flow-hub">
-      <rect x="230" y="360" width="140" height="60" rx="12"
+      <rect x="380" y="350" width="140" height="60" rx="12"
             fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
       <!-- Selectronic logo -->
       <image href="/static/img/selectronic-logo.svg"
-             x="242" y="370" width="116" height="20"
+             x="392" y="360" width="116" height="20"
              preserveAspectRatio="xMidYMid meet"/>
       <!-- SP PRO label -->
-      <text x="300" y="408" fill="var(--muted)" font-size="10" text-anchor="middle" font-weight="500">SP PRO</text>
+      <text x="450" y="400" fill="var(--muted)" font-size="10" text-anchor="middle" font-weight="500">SP PRO</text>
     </g>
 
-    <!-- ===== Battery Node (centered on x=450, below ABB Inverter column) ===== -->
+    <!-- ===== Battery Node (centered on x=450, below SP PRO) ===== -->
     <g class="flow-node {% if f.battery_active %}active{% else %}inactive{% endif %}" data-source="battery">
       <!-- Battery outer body -->
       <rect x="370" y="485" width="160" height="60" rx="10"
@@ -399,21 +353,21 @@
       </text>
     </g>
 
-    <!-- ===== House Node (right side at x=700, below bus junction) ===== -->
+    <!-- ===== House Node (right side, centered on bus at y=280) ===== -->
     <g class="flow-node {% if f.load_active %}active{% else %}inactive{% endif %}" data-source="house">
-      <rect x="640" y="360" width="120" height="60" rx="10"
+      <rect x="640" y="250" width="120" height="60" rx="10"
             fill="var(--surface)"
             stroke="{% if f.load_active %}var(--flow-house){% else %}var(--flow-inactive){% endif %}"
             stroke-width="1.5"/>
       <!-- Icon: House -->
-      <g transform="translate(650, 368) scale(0.8)"
+      <g transform="translate(650, 258) scale(0.8)"
          style="color: {% if f.load_active %}var(--flow-house){% else %}var(--flow-inactive){% endif %}">
         <use href="#icon-house"/>
       </g>
-      <text x="690" y="386" fill="{% if f.load_active %}var(--flow-house){% else %}var(--flow-inactive){% endif %}"
+      <text x="690" y="276" fill="{% if f.load_active %}var(--flow-house){% else %}var(--flow-inactive){% endif %}"
             font-size="11" font-weight="600">House</text>
       <!-- Power value -->
-      <text x="700" y="410" fill="var(--text)" font-size="16" font-weight="700" text-anchor="middle">
+      <text x="700" y="300" fill="var(--text)" font-size="16" font-weight="700" text-anchor="middle">
         {{ f.load_w }}<tspan fill="var(--muted)" font-size="11" font-weight="400"> W</tspan>
       </text>
     </g>
