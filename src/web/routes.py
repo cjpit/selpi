@@ -92,6 +92,17 @@ async def sse_tab(tab_name: str) -> Any:
 # API routes
 # ---------------------------------------------------------------------------
 
+@web_bp.route("/preview/energy-flow")
+async def preview_energy_flow() -> Any:
+    """Render the energy flow template with mock data for visual development.
+
+    Note: Uses mock data directly in the template, so no viewmodel/inverter
+    connection is needed. The preview app (preview.py) serves this without
+    any hardware dependencies.
+    """
+    return await render_template("preview_energy_flow.html")
+
+
 @web_bp.route("/api/stats")
 async def api_stats() -> Any:
     return view_model.snapshot

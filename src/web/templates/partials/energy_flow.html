@@ -10,7 +10,7 @@
 
 <div class="energy-flow">
 
-  {# ──────────── Solar Node ──────────── #}
+  {# ──────────── Solar Inverter Node ──────────── #}
   <div class="ef-node ef-solar {{ 'ef-active' if f.solar_active else 'ef-inactive' }}">
     <svg class="ef-icon" viewBox="0 0 24 24" width="28" height="28" fill="none"
          stroke="{% if f.solar_active %}var(--flow-solar){% else %}var(--flow-inactive){% endif %}"
@@ -18,46 +18,111 @@
       <circle cx="12" cy="12" r="4"/>
       <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
     </svg>
-    <div class="ef-label" style="color: {% if f.solar_active %}var(--flow-solar){% else %}var(--flow-inactive){% endif %}">Solar</div>
-    <div class="ef-value">{{ f.solar_w }}<span class="ef-unit"> W</span></div>
-  </div>
-
-  {# ── Solar → ABB connector ── #}
-  {% if f.solar_active %}
-  <div class="ef-connector ef-vertical ef-active ef-down"
-       style="--ef-color: var(--flow-solar); --ef-speed: {{ f.solar_speed }}">
-    <span class="ef-dot"></span><span class="ef-dot"></span><span class="ef-dot"></span>
-  </div>
-  {% else %}
-  <div class="ef-connector ef-vertical ef-inactive"></div>
-  {% endif %}
-
-  {# ──────────── ABB Inverter Node ──────────── #}
-  <div class="ef-node ef-abb {{ 'ef-active' if f.abb_active else 'ef-inactive' }}">
-    <div class="ef-node-header">
-      <img src="/static/img/abb-logo.svg" class="ef-logo" alt="ABB" width="36" height="14"
-           style="opacity: {% if f.abb_active %}1{% else %}0.4{% endif %}">
-      <span class="ef-sublabel" style="color: {% if f.abb_active %}var(--flow-solar){% else %}var(--flow-inactive){% endif %}">Inverter</span>
-    </div>
+    <div class="ef-label" style="color: {% if f.solar_active %}var(--flow-solar){% else %}var(--flow-inactive){% endif %}">Solar Inverter</div>
     <div class="ef-value">{{ f.abb_power_w }}<span class="ef-unit"> W</span></div>
     <div class="ef-progress-bar">
-      <div class="ef-progress-fill" style="width: {{ f.abb_percent }}%; background: {% if f.abb_active %}var(--flow-solar){% else %}var(--flow-inactive){% endif %}"></div>
+      <div class="ef-progress-fill" style="width: {{ f.abb_percent }}%; background: {% if f.solar_active %}var(--flow-solar){% else %}var(--flow-inactive){% endif %}"></div>
     </div>
     <div class="ef-percent">{{ f.abb_percent }}%</div>
   </div>
 
-  {# ── ABB → Bus connector ── #}
+  {# ── Solar Inverter → Junction connector ── #}
   {% if f.solar_active %}
   <div class="ef-connector ef-vertical ef-active ef-down"
-       style="--ef-color: var(--flow-solar); --ef-speed: {{ f.solar_speed }}">
-    <span class="ef-dot"></span><span class="ef-dot"></span><span class="ef-dot"></span>
+       style="--ef-color: var(--border); --ef-speed: {{ f.solar_speed }}">
+    <span class="ef-dot" style="--ef-color: var(--flow-solar);"></span><span class="ef-dot" style="--ef-color: var(--flow-solar);"></span><span class="ef-dot" style="--ef-color: var(--flow-solar);"></span>
   </div>
   {% else %}
   <div class="ef-connector ef-vertical ef-inactive"></div>
   {% endif %}
 
-  {# ──────────── Bus Row: Generator · SP PRO · House ──────────── #}
+  {# ──────────── Bus Section (SVG cross junction) ──────────── #}
   <div class="ef-bus">
+
+    {# SVG background: draws the cross junction lines and animated flow dots #}
+    <svg class="ef-bus-svg" viewBox="0 0 800 300" preserveAspectRatio="none">
+      {# Horizontal bus bar: Generator ↔ House at y=40 #}
+      <line x1="0" y1="60" x2="800" y2="60" stroke="var(--border)" stroke-width="3"/>
+
+      {# Vertical bar: top ↔ SP PRO hub at center x=400 #}
+      <line x1="400" y1="0" x2="400" y2="300" stroke="var(--border)" stroke-width="3"/>
+
+      {# Junction dot #}
+      <circle cx="400" cy="60" r="6" fill="var(--border)"/>
+
+      {# Animated flow dots — Solar (top → junction, downward) #}
+      {% if f.solar_active %}
+      <circle r="4" fill="var(--flow-solar)">
+        <animateMotion dur="{{ f.solar_speed }}" repeatCount="indefinite" path="M 400 0 L 400 60"/>
+      </circle>
+      <circle r="4" fill="var(--flow-solar)" opacity="0.7">
+        <animateMotion dur="{{ f.solar_speed }}" repeatCount="indefinite" begin="-{{ f.solar_speed|replace('s','')|float * 0.33 }}s" path="M 400 0 L 400 60"/>
+      </circle>
+      <circle r="4" fill="var(--flow-solar)" opacity="0.4">
+        <animateMotion dur="{{ f.solar_speed }}" repeatCount="indefinite" begin="-{{ f.solar_speed|replace('s','')|float * 0.66 }}s" path="M 400 0 L 400 60"/>
+      </circle>
+      {% endif %}
+
+      {# Animated flow dots — Generator (left → junction, rightward) #}
+      {% if f.generator_active %}
+      <circle r="4" fill="var(--flow-generator)">
+        <animateMotion dur="{{ f.generator_speed }}" repeatCount="indefinite" path="M 0 60 L 400 60"/>
+      </circle>
+      <circle r="4" fill="var(--flow-generator)" opacity="0.7">
+        <animateMotion dur="{{ f.generator_speed }}" repeatCount="indefinite" begin="-{{ f.generator_speed|replace('s','')|float * 0.33 }}s" path="M 0 60 L 400 60"/>
+      </circle>
+      <circle r="4" fill="var(--flow-generator)" opacity="0.4">
+        <animateMotion dur="{{ f.generator_speed }}" repeatCount="indefinite" begin="-{{ f.generator_speed|replace('s','')|float * 0.66 }}s" path="M 0 60 L 400 60"/>
+      </circle>
+      {% endif %}
+
+      {# Animated flow dots — Junction → House (rightward) #}
+      {% if f.solar_active and f.load_active %}
+      <circle r="4" fill="var(--flow-solar)">
+        <animateMotion dur="{{ f.solar_speed }}" repeatCount="indefinite" path="M 400 60 L 800 60"/>
+      </circle>
+      <circle r="4" fill="var(--flow-solar)" opacity="0.7">
+        <animateMotion dur="{{ f.solar_speed }}" repeatCount="indefinite" begin="-{{ f.solar_speed|replace('s','')|float * 0.33 }}s" path="M 400 60 L 800 60"/>
+      </circle>
+      <circle r="4" fill="var(--flow-solar)" opacity="0.4">
+        <animateMotion dur="{{ f.solar_speed }}" repeatCount="indefinite" begin="-{{ f.solar_speed|replace('s','')|float * 0.66 }}s" path="M 400 60 L 800 60"/>
+      </circle>
+      {% endif %}
+      {% if f.battery_discharging and f.load_active %}
+      <circle r="4" fill="var(--flow-battery-out)">
+        <animateMotion dur="{{ f.battery_speed }}" repeatCount="indefinite" path="M 400 60 L 800 60"/>
+      </circle>
+      <circle r="4" fill="var(--flow-battery-out)" opacity="0.7">
+        <animateMotion dur="{{ f.battery_speed }}" repeatCount="indefinite" begin="-{{ f.battery_speed|replace('s','')|float * 0.33 }}s" path="M 400 60 L 800 60"/>
+      </circle>
+      <circle r="4" fill="var(--flow-battery-out)" opacity="0.4">
+        <animateMotion dur="{{ f.battery_speed }}" repeatCount="indefinite" begin="-{{ f.battery_speed|replace('s','')|float * 0.66 }}s" path="M 400 60 L 800 60"/>
+      </circle>
+      {% endif %}
+
+      {# Animated flow dots — SP PRO (junction ↔ hub) #}
+      {% if f.battery_charging %}
+      <circle r="4" fill="var(--flow-battery-in)">
+        <animateMotion dur="{{ f.battery_speed }}" repeatCount="indefinite" path="M 400 60 L 400 300"/>
+      </circle>
+      <circle r="4" fill="var(--flow-battery-in)" opacity="0.7">
+        <animateMotion dur="{{ f.battery_speed }}" repeatCount="indefinite" begin="-{{ f.battery_speed|replace('s','')|float * 0.33 }}s" path="M 400 60 L 400 300"/>
+      </circle>
+      <circle r="4" fill="var(--flow-battery-in)" opacity="0.4">
+        <animateMotion dur="{{ f.battery_speed }}" repeatCount="indefinite" begin="-{{ f.battery_speed|replace('s','')|float * 0.66 }}s" path="M 400 60 L 400 300"/>
+      </circle>
+      {% elif f.battery_discharging %}
+      <circle r="4" fill="var(--flow-battery-out)">
+        <animateMotion dur="{{ f.battery_speed }}" repeatCount="indefinite" path="M 400 300 L 400 60"/>
+      </circle>
+      <circle r="4" fill="var(--flow-battery-out)" opacity="0.7">
+        <animateMotion dur="{{ f.battery_speed }}" repeatCount="indefinite" begin="-{{ f.battery_speed|replace('s','')|float * 0.33 }}s" path="M 400 300 L 400 60"/>
+      </circle>
+      <circle r="4" fill="var(--flow-battery-out)" opacity="0.4">
+        <animateMotion dur="{{ f.battery_speed }}" repeatCount="indefinite" begin="-{{ f.battery_speed|replace('s','')|float * 0.66 }}s" path="M 400 300 L 400 60"/>
+      </circle>
+      {% endif %}
+    </svg>
 
     {# ── Generator Node ── #}
     <div class="ef-node ef-generator {{ 'ef-active' if f.generator_active else 'ef-inactive' }}">
@@ -74,37 +139,6 @@
       <div class="ef-value">{{ f.generator_w }}<span class="ef-unit"> W</span></div>
     </div>
 
-    {# ── Left bus connector: Generator → center ── #}
-    <div class="ef-connector ef-horizontal">
-      {% if f.generator_active %}
-      <div class="ef-hdots" style="--ef-color: var(--flow-generator); --ef-speed: {{ f.generator_speed }}">
-        <span class="ef-dot"></span><span class="ef-dot"></span><span class="ef-dot"></span>
-      </div>
-      {% endif %}
-    </div>
-
-    {# ── SP PRO Hub ── #}
-    <div class="ef-hub">
-      <img src="/static/img/selectronic-logo.svg" class="ef-logo-selectronic" alt="Selectronic" width="110" height="18">
-      <div class="ef-value">{{ f.battery_w }}<span class="ef-unit"> W</span></div>
-      <div class="ef-hub-label">SP PRO</div>
-      <div class="ef-freq">{{ f.inv_freq_hz }} Hz</div>
-    </div>
-
-    {# ── Right bus connector: center → House ── #}
-    <div class="ef-connector ef-horizontal">
-      {% if f.solar_active and f.load_active %}
-      <div class="ef-hdots" style="--ef-color: var(--flow-solar); --ef-speed: {{ f.solar_speed }}">
-        <span class="ef-dot"></span><span class="ef-dot"></span><span class="ef-dot"></span>
-      </div>
-      {% endif %}
-      {% if f.battery_discharging and f.load_active %}
-      <div class="ef-hdots" style="--ef-color: var(--flow-battery-out); --ef-speed: {{ f.battery_speed }}">
-        <span class="ef-dot"></span><span class="ef-dot"></span><span class="ef-dot"></span>
-      </div>
-      {% endif %}
-    </div>
-
     {# ── House Node ── #}
     <div class="ef-node ef-house {{ 'ef-active' if f.load_active else 'ef-inactive' }}">
       <svg class="ef-icon" viewBox="0 0 24 24" width="28" height="28" fill="none"
@@ -118,38 +152,62 @@
       <div class="ef-value">{{ f.load_w }}<span class="ef-unit"> W</span></div>
     </div>
 
+    {# ── SP PRO Hub ── #}
+    <div class="ef-hub">
+      <img src="/static/img/selectronic-logo.svg" class="ef-logo-selectronic" alt="Selectronic" width="110" height="18">
+      <div class="ef-value">{{ f.battery_w }}<span class="ef-unit"> W</span></div>
+      <div class="ef-hub-label">SP PRO</div>
+      <div class="ef-freq">{{ f.inv_freq_hz }} Hz</div>
+    </div>
+
   </div>
 
   {# ── SP PRO → Battery connector ── #}
   {% if f.battery_charging %}
   <div class="ef-connector ef-vertical ef-active ef-down"
-       style="--ef-color: var(--flow-battery-in); --ef-speed: {{ f.battery_speed }}">
-    <span class="ef-dot"></span><span class="ef-dot"></span><span class="ef-dot"></span>
+       style="--ef-color: var(--border); --ef-speed: {{ f.battery_speed }}">
+    <span class="ef-dot" style="--ef-color: var(--flow-battery-in);"></span><span class="ef-dot" style="--ef-color: var(--flow-battery-in);"></span><span class="ef-dot" style="--ef-color: var(--flow-battery-in);"></span>
   </div>
   {% elif f.battery_discharging %}
   <div class="ef-connector ef-vertical ef-active ef-up"
-       style="--ef-color: var(--flow-battery-out); --ef-speed: {{ f.battery_speed }}">
-    <span class="ef-dot"></span><span class="ef-dot"></span><span class="ef-dot"></span>
+       style="--ef-color: var(--border); --ef-speed: {{ f.battery_speed }}">
+    <span class="ef-dot" style="--ef-color: var(--flow-battery-out);"></span><span class="ef-dot" style="--ef-color: var(--flow-battery-out);"></span><span class="ef-dot" style="--ef-color: var(--flow-battery-out);"></span>
   </div>
   {% else %}
   <div class="ef-connector ef-vertical ef-inactive"></div>
   {% endif %}
 
   {# ──────────── Battery Node ──────────── #}
-  <div class="ef-node ef-battery {{ 'ef-active' if f.battery_active else 'ef-inactive' }}"
-       style="border-color: {{ batt_color }}">
-    {# SOC fill bar (background) #}
-    <div class="ef-battery-fill" style="width: {{ f.soc_pct }}%; background: {{ batt_color }}"></div>
-    {# Charging bolt overlay #}
-    {% if f.battery_charging %}
-    <svg class="ef-bolt" viewBox="0 0 24 24" width="22" height="22" fill="none"
-         stroke="{{ batt_color }}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M12 5l-3 7h4l-3 7"/>
+  <div class="ef-battery-wrap {{ 'ef-active' if f.battery_active else 'ef-inactive' }}">
+    <svg class="ef-battery-svg" viewBox="0 0 220 90" xmlns="http://www.w3.org/2000/svg">
+      {# Battery body #}
+      <rect x="2" y="2" width="196" height="86" rx="12"
+            fill="var(--surface)"
+            stroke="{{ batt_color }}" stroke-width="2"/>
+      {# Terminal bump #}
+      <rect x="198" y="28" width="16" height="34" rx="4"
+            fill="var(--surface)"
+            stroke="{{ batt_color }}" stroke-width="1.5"/>
+      {# SOC fill bar #}
+      <clipPath id="ef-batt-clip">
+        <rect x="4" y="4" width="192" height="82" rx="10"/>
+      </clipPath>
+      <rect x="4" y="4" width="{{ (192 * f.soc_pct / 100) | round(1) }}" height="82" rx="10"
+            fill="{{ batt_color }}" opacity="0.25"
+            clip-path="url(#ef-batt-clip)"/>
+      {# Charging bolt #}
+      {% if f.battery_charging %}
+      <g transform="translate(14, 12) scale(0.9)">
+        <path d="M12 5l-3 7h4l-3 7" fill="none" stroke="{{ batt_color }}"
+              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      {% endif %}
     </svg>
-    {% endif %}
-    <div class="ef-soc" style="color: {{ batt_color }}">{{ f.soc_pct }}%</div>
-    <div class="ef-charge-state" style="color: {{ batt_color }}">{{ f.charge_state }}</div>
-    <div class="ef-meta">{{ f.hours_remaining }} h remaining</div>
+    <div class="ef-battery-content">
+      <div class="ef-soc" style="color: {{ batt_color }}">{{ f.soc_pct }}%</div>
+      <div class="ef-charge-state" style="color: {{ batt_color }}">{{ f.charge_state }}</div>
+      <div class="ef-meta">{{ f.hours_remaining }} h remaining</div>
+    </div>
   </div>
 
 </div>

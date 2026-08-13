@@ -421,7 +421,7 @@ html, body {
   flex-direction: column;
   align-items: center;
   gap: 0;
-  max-width: 600px;
+  max-width: 900px;
   margin: 0 auto 1.5rem;
   padding: 0 0.5rem;
 }
@@ -445,12 +445,9 @@ html, body {
   filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.04));
 }
 
-.ef-node.ef-inactive {
-  opacity: 0.5;
-}
 
-.ef-node.ef-active.ef-solar,
-.ef-node.ef-active.ef-abb { border-color: var(--flow-solar); }
+
+.ef-node.ef-active.ef-solar { border-color: var(--flow-solar); }
 .ef-node.ef-active.ef-generator { border-color: var(--flow-generator); }
 .ef-node.ef-active.ef-house { border-color: var(--flow-house); }
 
@@ -465,25 +462,6 @@ html, body {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 0.25rem;
-}
-
-.ef-sublabel {
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.ef-node-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-bottom: 0.25rem;
-}
-
-.ef-logo {
-  display: inline-block;
 }
 
 .ef-value {
@@ -505,13 +483,7 @@ html, body {
   margin-top: 0.25rem;
 }
 
-.ef-meta {
-  font-size: 0.8rem;
-  color: var(--muted);
-  margin-top: 0.25rem;
-}
-
-/* ABB progress bar */
+/* Solar inverter progress bar */
 .ef-progress-bar {
   width: 100%;
   height: 6px;
@@ -537,7 +509,6 @@ html, body {
   text-align: center;
   min-width: 160px;
   position: relative;
-  z-index: 1;
   filter: drop-shadow(0 0 8px rgba(88, 166, 255, 0.12));
 }
 
@@ -559,50 +530,63 @@ html, body {
   margin-top: 0.15rem;
 }
 
-/* ── Battery Node ── */
+/* ── Battery Node (SVG shape + HTML overlay) ── */
 
-.ef-battery {
-  min-width: 200px;
+.ef-battery-wrap {
+  position: relative;
+  width: 220px;
+  max-width: 100%;
+  z-index: 10;
 }
 
-.ef-battery-fill {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  border-radius: 0.85rem;
-  opacity: 0.2;
-  transition: width 0.5s ease;
-  z-index: 0;
+.ef-battery-wrap.ef-inactive {
+  opacity: 0.5;
 }
 
-.ef-bolt {
+.ef-battery-wrap.ef-active .ef-battery-svg {
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.06));
+}
+
+.ef-battery-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-left: .7em;
+}
+
+.ef-battery-content {
   position: absolute;
-  top: 0.5rem;
-  left: 0.75rem;
-  z-index: 1;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1.5rem 0 0.5rem;
+  text-align: center;
 }
 
 .ef-soc {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 700;
   line-height: 1.1;
-  position: relative;
-  z-index: 1;
 }
 
 .ef-charge-state {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 700;
-  position: relative;
-  z-index: 1;
+}
+
+.ef-meta {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 0.15rem;
 }
 
 /* ── Connectors — Vertical ── */
 
 .ef-connector.ef-vertical {
   width: 3px;
-  height: 2rem;
+  height: 3rem;
   position: relative;
   background: var(--border);
   flex-shrink: 0;
@@ -621,8 +605,8 @@ html, body {
 
 .ef-connector.ef-vertical .ef-dot {
   position: absolute;
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: var(--ef-color, var(--success));
   left: 50%;
@@ -658,78 +642,43 @@ html, body {
   to { bottom: calc(100% + 5px); }
 }
 
-/* ── Bus Row ── */
+/* ── Bus Section (SVG cross junction) ── */
 
 .ef-bus {
-  display: grid;
-  grid-template-columns: auto 1fr auto 1fr auto;
-  align-items: center;
-  gap: 0;
+  position: relative;
   width: 100%;
-  max-width: 560px;
-  position: relative;
-  padding: 0.5rem 0;
+  max-width: 800px;
+  height: 300px;
+  margin: 0 auto;
 }
 
-/* Horizontal bus bar line */
-.ef-bus::before {
-  content: '';
+/* SVG background draws lines, junction, and animated dots */
+.ef-bus-svg {
   position: absolute;
-  top: 50%;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* Nodes positioned over the SVG */
+.ef-bus .ef-generator {
+  position: absolute;
   left: 0;
-  right: 0;
-  height: 3px;
-  background: var(--border);
-  z-index: 0;
+  top: 0;
 }
 
-/* Bus nodes sit above the line */
-.ef-bus > .ef-node,
-.ef-bus > .ef-hub {
-  z-index: 1;
-}
-
-/* ── Connectors — Horizontal (bus) ── */
-
-.ef-connector.ef-horizontal {
-  position: relative;
-  height: 3px;
-  z-index: 0;
-}
-
-.ef-hdots {
+.ef-bus .ef-house {
   position: absolute;
-  top: 50%;
-  left: 0;
   right: 0;
-  transform: translateY(-50%);
-  height: 0;
+  top: 0;
 }
 
-.ef-hdots .ef-dot {
+.ef-bus .ef-hub {
   position: absolute;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--ef-color, var(--success));
-  top: 50%;
-  transform: translateY(-50%);
-  animation: ef-flow-right var(--ef-speed, 2s) linear infinite;
-}
-
-.ef-hdots .ef-dot:nth-child(2) {
-  animation-delay: calc(var(--ef-speed, 2s) * -0.33);
-  opacity: 0.7;
-}
-
-.ef-hdots .ef-dot:nth-child(3) {
-  animation-delay: calc(var(--ef-speed, 2s) * -0.66);
-  opacity: 0.4;
-}
-
-@keyframes ef-flow-right {
-  from { left: -8px; }
-  to { left: calc(100% + 8px); }
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
 }
 
 /* ── Responsive — Mobile ── */
@@ -756,31 +705,14 @@ html, body {
     font-size: 2rem;
   }
 
-  /* Bus row collapses to single column */
+  .ef-battery-wrap {
+    width: 100%;
+    z-index: 10;
+  }
+
   .ef-bus {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto auto auto;
+    height: 300px;
     max-width: 100%;
-    gap: 0;
-  }
-
-  /* Hide bus bar line on mobile */
-  .ef-bus::before {
-    display: none;
-  }
-
-  /* Horizontal connectors become vertical on mobile */
-  .ef-connector.ef-horizontal {
-    width: 3px;
-    height: 2rem;
-    margin: 0 auto;
-  }
-
-  .ef-hdots .ef-dot {
-    left: 50%;
-    top: auto;
-    transform: translateX(-50%);
-    animation-name: ef-flow-down;
   }
 }
 

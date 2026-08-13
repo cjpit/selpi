@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block body %}
+<style>
+  body { padding: 1rem; }
+  h2 { color: var(--muted); font-size: 0.9rem; text-align: center; margin-bottom: 1rem; }
+</style>
+
+<h2>Energy Flow Preview — Mock Data (Solar 3500W, Battery Charging 1200W, Load 2800W)</h2>
+
+{% set snapshot = {"flow": {
+  "solar_w": 3500,
+  "solar_active": true,
+  "solar_speed": "1.5s",
+  "load_w": 2800,
+  "load_active": true,
+  "load_speed": "1.5s",
+  "battery_w": -1200,
+  "battery_charging": true,
+  "battery_discharging": false,
+  "battery_active": true,
+  "battery_speed": "3s",
+  "generator_w": 0,
+  "generator_active": false,
+  "generator_speed": "",
+  "abb_power_w": 3500,
+  "abb_percent": 58,
+  "abb_active": true,
+  "soc_pct": 72.0,
+  "soc_color": "green",
+  "hours_remaining": 8.5,
+  "charge_state": "Absorb",
+  "inv_freq_hz": 50.02
+}} %}
+
+{% include "partials/energy_flow.html" with context %}
+
+{% endblock %}
