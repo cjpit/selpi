@@ -40,7 +40,7 @@
     </defs>
 
     <!-- ===== AC BUS BAR (horizontal structural line, Generator to House) ===== -->
-    <line x1="100" y1="280" x2="700" y2="280"
+    <line x1="260" y1="280" x2="640" y2="280"
           stroke="var(--border)" stroke-width="3" stroke-linecap="round"/>
     <!-- Bus junction dot at center (SP PRO connection) -->
     <circle cx="450" cy="280" r="5" fill="var(--surface)" stroke="var(--border)" stroke-width="1.5"/>
@@ -117,15 +117,15 @@
     {% if f.generator_active %}
     <circle r="4" fill="var(--flow-generator)" opacity="0.9">
       <animateMotion dur="{{ f.generator_speed }}" repeatCount="indefinite"
-                     path="M100 280 C200 280, 350 280, 450 280"/>
+                     path="M200 280 C275 280, 375 280, 450 280"/>
     </circle>
     <circle r="4" fill="var(--flow-generator)" opacity="0.6">
       <animateMotion dur="{{ f.generator_speed }}" begin="-0.33s" repeatCount="indefinite"
-                     path="M100 280 C200 280, 350 280, 450 280"/>
+                     path="M200 280 C275 280, 375 280, 450 280"/>
     </circle>
     <circle r="4" fill="var(--flow-generator)" opacity="0.35">
       <animateMotion dur="{{ f.generator_speed }}" begin="-0.66s" repeatCount="indefinite"
-                     path="M100 280 C200 280, 350 280, 450 280"/>
+                     path="M200 280 C275 280, 375 280, 450 280"/>
     </circle>
     {% endif %}
 
@@ -278,21 +278,21 @@
       </text>
     </g>
 
-    <!-- ===== Generator Node (left side, centered on bus at y=280) ===== -->
+    <!-- ===== Generator Node (left side, centered on bus at y=280, x=200) ===== -->
     <g class="flow-node {% if f.generator_active %}active{% else %}inactive{% endif %}" data-source="generator">
-      <rect x="40" y="250" width="120" height="60" rx="10"
+      <rect x="140" y="250" width="120" height="60" rx="10"
             fill="var(--surface)"
             stroke="{% if f.generator_active %}var(--flow-generator){% else %}var(--flow-inactive){% endif %}"
             stroke-width="1.5"/>
       <!-- Icon: Generator -->
-      <g transform="translate(50, 258) scale(0.8)"
+      <g transform="translate(150, 258) scale(0.8)"
          style="color: {% if f.generator_active %}var(--flow-generator){% else %}var(--flow-inactive){% endif %}">
         <use href="#icon-generator"/>
       </g>
-      <text x="88" y="276" fill="{% if f.generator_active %}var(--flow-generator){% else %}var(--flow-inactive){% endif %}"
+      <text x="188" y="276" fill="{% if f.generator_active %}var(--flow-generator){% else %}var(--flow-inactive){% endif %}"
             font-size="11" font-weight="600">Generator</text>
       <!-- Power value -->
-      <text x="100" y="300" fill="var(--text)" font-size="16" font-weight="700" text-anchor="middle">
+      <text x="200" y="300" fill="var(--text)" font-size="16" font-weight="700" text-anchor="middle">
         {{ f.generator_w }}<tspan fill="var(--muted)" font-size="11" font-weight="400"> W</tspan>
       </text>
     </g>
