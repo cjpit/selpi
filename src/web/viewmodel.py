@@ -16,7 +16,7 @@ class DashboardViewModel:
         self.__statistics = Statistics()
         self.__history = HistoryStore()
         self.__snapshot: dict[str, Any] = {
-            "meta": {"last_updated": None, "connected": False, "error": None},
+            "meta": {"last_updated": None, "last_updated_ms": 0, "connected": False, "error": None},
             "overview": {},
             "battery": {},
             "solar": {},

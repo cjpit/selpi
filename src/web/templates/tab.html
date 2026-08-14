@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% block body %}
-<div class="app"{% if tab != 'charts' %} data-init="@get('/sse/{{ tab }}')"{% endif %}>
+<div class="app"
+     {% if tab != 'charts' %}data-init="@get('/sse/{{ tab }}')"{% endif %}
+     data-signals:last-updated="0"
+     data-signals:connected="false"
+     data-on-interval__duration.1s="$connected = Date.now() - $lastUpdated < 60000">
   <header class="app-header">
     <h1>Selectronics Manager</h1>
     <div id="header-meta" class="header-meta">

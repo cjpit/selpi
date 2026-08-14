@@ -780,9 +780,11 @@ def build_view_model(raw_stats: list[dict[str, Any]]) -> dict[str, Any]:
         ],
     }
 
+    now = datetime.now(timezone.utc)
     return {
         "meta": {
-            "last_updated": datetime.now(timezone.utc).isoformat(),
+            "last_updated": now.isoformat(),
+            "last_updated_ms": int(now.timestamp() * 1000),
             "connected": True,
             "error": None,
         },

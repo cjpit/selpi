@@ -66,6 +66,11 @@ async def sse_tab(tab_name: str) -> Any:
     while True:
         snapshot = view_model.snapshot
 
+        # Push lastUpdated signal for client-side connection detection
+        yield ServerSentEventGenerator.patch_signals(
+            {"lastUpdated": snapshot["meta"]["last_updated_ms"]}
+        )
+
         # Shared elements: header and alarm banner
         yield ServerSentEventGenerator.patch_elements(
             await render_template("partials/header.html", snapshot=snapshot),
