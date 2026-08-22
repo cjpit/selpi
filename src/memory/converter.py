@@ -10,7 +10,8 @@ def convert(conversion: str, value: int, scales: dict):
 
 # Magic constants used for shifting integers to floating point numbers
 MAGIC = 32768.0
-MAGIC_AC_W_DIVISOR        = MAGIC * 800.0
+MAGIC_AC_W_DIVISOR        = MAGIC * 800.0    # for 32-bit AC power values (e.g. LoadAcPower)
+MAGIC_AC_W_SHORT_DIVISOR  = MAGIC * 100.0    # for 16-bit signed AC power values (e.g. ACGeneratorPower)
 MAGIC_DC_W_DIVISOR        = MAGIC * 100.0
 MAGIC_DC_V_DIVISOR        = MAGIC * 10.0
 MAGIC_WH_MULTIPLIER       = 24.0
@@ -36,7 +37,7 @@ def _convert_ac_w(raw, scales):
     return raw * scales['CommonScaleForAcVolts'] * scales['CommonScaleForAcCurrent'] / MAGIC_AC_W_DIVISOR
 
 def _convert_ac_w_ushort(raw, scales):
-    return raw * scales['CommonScaleForAcVolts'] * scales['CommonScaleForAcCurrent'] / MAGIC_AC_W_DIVISOR
+    return raw * scales['CommonScaleForAcVolts'] * scales['CommonScaleForAcCurrent'] / MAGIC_AC_W_SHORT_DIVISOR
 
 def _convert_ac_v(raw, scales):
     return raw * scales['CommonScaleForAcVolts'] / MAGIC_AC_W_DIVISOR
