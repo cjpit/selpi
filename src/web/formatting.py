@@ -821,7 +821,7 @@ def build_view_model(raw_stats: list[dict[str, Any]]) -> dict[str, Any]:
             "net_today_kwh": round(stat_value(stats_by_name, "BattNetToday") / 1000, 2),
             "in_yesterday_kwh": round(stat_value(stats_by_name, "BattInYesterday") / 1000, 2),
             "out_yesterday_kwh": round(stat_value(stats_by_name, "BattOutYesterday") / 1000, 2),
-            "float_hours": round(stat_value(stats_by_name, "FloatHours") / 60, 1),
+            "float_hours": round(stat_value(stats_by_name, "FloatHours"), 1),
         },
         "solar": {
             "power_w": int(round(stat_value(stats_by_name, "CombinedKacoAcPowerHiRes"))),

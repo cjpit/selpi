@@ -6,3 +6,4 @@ SP LINK
 *.db-wal
 *.db-shm
 data/
+plans

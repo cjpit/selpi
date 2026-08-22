@@ -24,6 +24,8 @@ class ConverterTest(TestCase):
         ('dc_w', -12, -46.142578125),
         ('dc_w', -3, -11.53564453125),
         ('dc_wh', 41, 3783.69140625),
+        ('minutes_to_hours', 210, 3.5),
+        ('minutes_to_hours', 60, 1.0),
         ('percent', 25563, 99.85546875),
         ('shunt_name', 0, 'None'),
         ('shunt_name', 1, 'Solar'),
